@@ -66,10 +66,25 @@ public class BedServiceImpl implements BedService {
      */
     @Override
     public void updateBed(BedDto bedDto) {
+        // 确保从数据库获取原始数据，避免丢失重要字段
+        Bed existingBed = bedMapper.getBedById(bedDto.getId());
+        if (existingBed == null) {
+            throw new BaseException(BasicEnum.SYSYTEM_FAIL);
+        }
 
         Bed bed = BeanUtil.toBean(bedDto, Bed.class);
+        // 保留原有的roomId，如果没有传入的话
+        if (bedDto.getRoomId() == null) {
+            bed.setRoomId(existingBed.getRoomId());
+        }
+        // 保留原有的bedStatus，如果没有传入的话
+        if (bedDto.getBedStatus() == null) {
+            bed.setBedStatus(existingBed.getBedStatus());
+        }
+
         bed.setUpdateTime(LocalDateTime.now());
         bed.setUpdateBy(1L);
+        // 如果有传入bedStatus，使用传入的值
         if(ObjectUtil.isNotEmpty(bedDto.getBedStatus())){
             bed.setBedStatus(bedDto.getBedStatus());
         }
