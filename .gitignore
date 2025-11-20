@@ -1,0 +1,47 @@
+# Maven编译产物
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+
+# IDE文件
+.idea/
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# 日志文件
+logs/
+*.log
+*.log.*
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 依赖目录
+node_modules/
+
+# 配置文件（包含敏感信息）
+*.properties
+*.yml
+!application.yml
+!application.properties
+
+# 其他
+.cache/
+dist/
+build/
