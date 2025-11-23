@@ -13,6 +13,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class NursingProjectServiceImpl implements NursingProjectService {
     @Autowired
@@ -29,6 +31,10 @@ public class NursingProjectServiceImpl implements NursingProjectService {
     public void add(NursingProjectDto nursingProjectDTO) {
         NursingProject nursingProject = new NursingProject();
         BeanUtils.copyProperties(nursingProjectDTO, nursingProject);
+        // 设置公共字段
+        nursingProject.setCreateBy(1L);
+        nursingProject.setCreateTime(LocalDateTime.now());
+        nursingProject.setUpdateTime(LocalDateTime.now());
         nursingProjectMapper.insert(nursingProject);
     }
 
@@ -51,6 +57,33 @@ public class NursingProjectServiceImpl implements NursingProjectService {
     public void update(NursingProjectDto nursingProjectDTO) {
         NursingProject nursingProject = new NursingProject();
         BeanUtils.copyProperties(nursingProjectDTO, nursingProject);
+        // 设置公共字段
+        nursingProject.setUpdateBy(1L);
+        nursingProject.setUpdateTime(LocalDateTime.now());
+        nursingProjectMapper.update(nursingProject);
+    }
+
+    /**
+     * 删除护理项目
+     * @param id
+     */
+    @Override
+    public void delete(Long id) {
+        nursingProjectMapper.deleteById(id);
+    }
+
+    /**
+     * 修改护理项目状态
+     * @param id
+     * @param status
+     */
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        NursingProject nursingProject = new NursingProject();
+        nursingProject.setId(id);
+        nursingProject.setStatus(status);
+        nursingProject.setUpdateBy(1L);
+        nursingProject.setUpdateTime(LocalDateTime.now());
         nursingProjectMapper.update(nursingProject);
     }
 }

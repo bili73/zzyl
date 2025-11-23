@@ -4,6 +4,8 @@ import com.zzyl.base.PageResponse;
 import com.zzyl.dto.NursingProjectDto;
 import com.zzyl.vo.NursingProjectVo;
 
+import java.util.List;
+
 /**
  * 护理项目service接口
  */
@@ -36,4 +38,17 @@ public interface NursingProjectService {
      * @param nursingProjectDTO
      */
     void update(NursingProjectDto nursingProjectDTO);
+
+    /**
+     * 删除护理项目
+     * @param id
+     */
+    void delete(Long id);
+
+    /**
+     * 修改护理项目状态
+     * @param id
+     * @param status
+     */
+    void updateStatus(Long id, Integer status);
 }

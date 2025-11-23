@@ -61,4 +61,8 @@
         where id = #{id}
     </update>
 
+    <delete id="deleteById">
+        delete from nursing_project where id = #{id}
+    </delete>
+
 </mapper>

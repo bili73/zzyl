@@ -17,4 +17,6 @@ public interface NursingProjectMapper {
     NursingProject selectById(Long id);
     //修改护理项目
     void update(NursingProject nursingProject);
+    //删除护理项目
+    void deleteById(Long id);
 }

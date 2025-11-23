@@ -54,12 +54,29 @@
     </delete>
     <update id="updateBed" parameterType="com.zzyl.entity.Bed">
         update bed
-        set bed_number  = #{bedNumber},
-            sort        = #{sort},
-            bed_status  = #{bedStatus},
-            room_id     = #{roomId},
-            update_time = #{updateTime},
-            update_by   = #{updateBy}
+        <set>
+            <if test="bedNumber!= null">
+                bed_number  = #{bedNumber},
+            </if>
+            <if test="sort!= null">
+                sort        = #{sort},
+            </if>
+            <if test="bedStatus!= null">
+                bed_status  = #{bedStatus},
+            </if>
+            <if test="roomId!= null">
+                room_id     = #{roomId},
+            </if>
+            <if test="remark!= null">
+                remark      = #{remark},
+            </if>
+            <if test="updateTime!= null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by   = #{updateBy},
+            </if>
+        </set>
         where id = #{id}
     </update>
     <select id="getBedById" resultMap="BedResultMap" parameterType="java.lang.Long">
