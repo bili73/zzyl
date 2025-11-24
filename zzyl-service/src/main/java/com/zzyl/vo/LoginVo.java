@@ -2,6 +2,7 @@ package com.zzyl.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "登录对象")
+@Builder
 public class LoginVo {
 
     @ApiModelProperty(value = "JWT token")

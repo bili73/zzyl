@@ -64,3 +64,6 @@ zzyl:
       accessKeyId: LTAI5tS3PVWkF5mz89YNeEu7
       accessKeySecret: fVDUmhEAzEMC1zJhgbcQ5xGdlQiUbY
       bucketName: java-zzyl-20251103
+  wechat:
+    appId: wx3eebdbe27d92431a
+    appSecret: 37e034ed66077fc069b0e26142998b28
