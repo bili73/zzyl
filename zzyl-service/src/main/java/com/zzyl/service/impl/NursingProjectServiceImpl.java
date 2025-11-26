@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class NursingProjectServiceImpl implements NursingProjectService {
@@ -85,5 +86,15 @@ public class NursingProjectServiceImpl implements NursingProjectService {
         nursingProject.setUpdateBy(1L);
         nursingProject.setUpdateTime(LocalDateTime.now());
         nursingProjectMapper.update(nursingProject);
+    }
+
+    /**
+     * 小程序端查询启用的护理项目列表
+     * @return
+     */
+    @Override
+    public List<NursingProjectVo> listEnabledProjects() {
+        List<NursingProject> projects = nursingProjectMapper.listByStatus(1); // 1表示启用状态
+        return cn.hutool.core.bean.BeanUtil.copyToList(projects, NursingProjectVo.class);
     }
 }

@@ -19,7 +19,7 @@
 
     <insert id="insert" parameterType="com.zzyl.entity.Visit" useGeneratedKeys="true" keyProperty="id">
         insert into visit(name, mobile, time, visitor, type, status, create_by, remark, create_time)
-        values (#{name}, #{mobile}, #{time}, #{visitor}, #{type}, #{status}, #{createBy}, #{remark}, #{createTime})
+        values (#{name}, #{mobile}, #{time}, #{visitor,jdbcType=VARCHAR}, #{type}, #{status}, #{createBy}, #{remark}, #{createTime})
     </insert>
 
     <update id="update" parameterType="com.zzyl.entity.Visit">
@@ -27,7 +27,7 @@
         set name        = #{name},
             mobile      = #{mobile},
             time        = #{time},
-            visitor     = #{visitor},
+            visitor     = #{visitor,jdbcType=VARCHAR},
             type        = #{type},
             status      = #{status},
             update_time = #{updateTime},
@@ -42,6 +42,12 @@
     </delete>
 
     <select id="findById" parameterType="java.lang.Long" resultType="com.zzyl.entity.Visit">
+        select *
+        from visit
+        where id = #{id}
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="VisitMap">
         select *
         from visit
         where id = #{id}
@@ -82,4 +88,46 @@
         </where>
         order by create_time desc
     </select>
+
+    <!-- 根据手机号和时间查找预约 -->
+    <select id="findByMobileAndTime" resultMap="VisitMap">
+        select * from visit where mobile = #{mobile} and time = #{time}
+    </select>
+
+    <!-- 根据用户ID和状态查找预约 -->
+    <select id="findByUserIdAndStatus" resultMap="VisitMap">
+        select * from visit where create_by = #{userId} and status = #{status} order by create_time desc
+    </select>
+
+    <!-- 根据用户ID查找预约 -->
+    <select id="findByUserId" resultMap="VisitMap">
+        select * from visit where create_by = #{userId} order by create_time desc
+    </select>
+
+    <!-- 分页根据用户ID和状态查找预约 -->
+    <select id="pageByUserIdAndStatus" resultMap="VisitMap">
+        select * from visit where create_by = #{userId} and status = #{status} order by create_time desc
+    </select>
+
+    <!-- 分页根据用户ID查找预约 -->
+    <select id="pageByUserId" resultMap="VisitMap">
+        select * from visit where create_by = #{userId} order by create_time desc
+    </select>
+
+    <!-- 根据用户ID和状态统计预约数量 -->
+    <select id="countByUserIdAndStatus" resultType="java.lang.Integer">
+        select count(*) from visit where create_by = #{userId} and status = #{status}
+    </select>
+
+    <!-- 根据用户ID统计预约数量 -->
+    <select id="countByUserId" resultType="java.lang.Integer">
+        select count(*) from visit where create_by = #{userId}
+    </select>
+
+    <!-- 过期超时的预约 -->
+    <update id="expireOverdueReservations">
+        update visit set status = 3, update_time = #{currentTime}
+        where status = 0 and time &lt; #{currentTime}
+    </update>
+
 </mapper>

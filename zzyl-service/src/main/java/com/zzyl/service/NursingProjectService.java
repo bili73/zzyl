@@ -51,4 +51,10 @@ public interface NursingProjectService {
      * @param status
      */
     void updateStatus(Long id, Integer status);
+
+    /**
+     * 小程序端查询启用的护理项目列表
+     * @return
+     */
+    List<NursingProjectVo> listEnabledProjects();
 }

@@ -20,49 +20,77 @@
     </resultMap>
 
 
+    <!-- 分页查询护理项目 -->
     <select id="selectByPage" resultMap="nursingProjectResultMap">
-        select p.*,su.real_name as creator from nursing_project p left join sys_user su on p.create_by = su.id
+        SELECT
+            p.id, p.name, p.order_no, p.unit, p.price, p.image,
+            p.nursing_requirement, p.status, p.create_by, p.update_by,
+            p.remark, p.create_time, p.update_time,
+            su.real_name AS creator
+        FROM nursing_project p
+        LEFT JOIN sys_user su ON p.create_by = su.id
         <where>
             <if test="name != null and name != ''">
-                and name like concat('%',#{name},'%')
+                AND p.name LIKE CONCAT('%', #{name}, '%')
             </if>
             <if test="status != null">
-                and status = #{status}
+                AND p.status = #{status}
             </if>
         </where>
-        order by order_no ,create_time desc
+        ORDER BY p.order_no ASC, p.create_time DESC
     </select>
 
     <!-- 新增护理项目 -->
-    <insert id="insert">
-        insert into nursing_project (name, order_no, unit, price, image, nursing_requirement, status, create_by,
-                                     update_by, remark, create_time, update_time)
-        values (#{name}, #{orderNo}, #{unit}, #{price}, #{image}, #{nursingRequirement}, #{status}, #{createBy},
-                #{updateBy}, #{remark}, #{createTime}, #{updateTime})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO nursing_project (
+            name, order_no, unit, price, image, nursing_requirement,
+            status, create_by, update_by, remark, create_time, update_time
+        ) VALUES (
+            #{name}, #{orderNo}, #{unit}, #{price}, #{image}, #{nursingRequirement},
+            #{status}, #{createBy}, #{updateBy}, #{remark}, #{createTime}, #{updateTime}
+        )
     </insert>
 
+    <!-- 根据ID查询护理项目 -->
     <select id="selectById" resultMap="nursingProjectResultMap">
-        select *
-        from nursing_project
-        where id = #{id}
+        SELECT
+            id, name, order_no, unit, price, image,
+            nursing_requirement, status, create_by, update_by,
+            remark, create_time, update_time
+        FROM nursing_project
+        WHERE id = #{id}
     </select>
+
+    <!-- 更新护理项目 -->
     <update id="update">
-        update nursing_project
-        set name                = #{name},
-            order_no            = #{orderNo},
-            unit                = #{unit},
-            price               = #{price},
-            image               = #{image},
+        UPDATE nursing_project SET
+            name = #{name},
+            order_no = #{orderNo},
+            unit = #{unit},
+            price = #{price},
+            image = #{image},
             nursing_requirement = #{nursingRequirement},
-            status              = #{status},
-            update_by           = #{updateBy},
-            remark              = #{remark},
-            update_time         = #{updateTime}
-        where id = #{id}
+            status = #{status},
+            update_by = #{updateBy},
+            remark = #{remark},
+            update_time = #{updateTime}
+        WHERE id = #{id}
     </update>
 
+    <!-- 删除护理项目 -->
     <delete id="deleteById">
-        delete from nursing_project where id = #{id}
+        DELETE FROM nursing_project WHERE id = #{id}
     </delete>
+
+    <!-- 根据状态查询护理项目列表 -->
+    <select id="listByStatus" resultMap="nursingProjectResultMap">
+        SELECT
+            id, name, order_no, unit, price, image,
+            nursing_requirement, status, create_by, update_by,
+            remark, create_time, update_time
+        FROM nursing_project
+        WHERE status = #{status}
+        ORDER BY order_no ASC, create_time DESC
+    </select>
 
 </mapper>
