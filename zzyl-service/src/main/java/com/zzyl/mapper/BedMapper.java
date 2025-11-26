@@ -40,5 +40,15 @@ public interface BedMapper {
      */
     Bed getBedById(Long id);
 
+    /**
+     * 根据id获取床位信息（别名方法）
+     *
+     * @param id 床位id
+     * @return 床位对象
+     */
+    default Bed selectById(Long id) {
+        return getBedById(id);
+    }
+
 }
 

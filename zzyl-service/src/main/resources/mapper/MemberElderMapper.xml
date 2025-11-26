@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzyl.mapper.MemberElderMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="memberElderResultMap" type="com.zzyl.entity.MemberElder">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="elder_id" property="elderId"/>
+        <result column="elder_id_card_no" property="elderIdCardNo"/>
+        <result column="relation_type" property="relationType"/>
+        <result column="relation" property="relation"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 插入用户老人绑定关系 -->
+    <insert id="insert" parameterType="com.zzyl.entity.MemberElder" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO member_elder (
+            user_id,
+            elder_id,
+            elder_id_card_no,
+            relation_type,
+            relation,
+            remark,
+            create_by,
+            create_time
+        ) VALUES (
+            #{userId},
+            #{elderId},
+            #{elderIdCardNo},
+            #{relationType},
+            #{relation},
+            #{remark},
+            #{createBy},
+            #{createTime}
+        )
+    </insert>
+
+    <!-- 根据用户ID查询绑定的老人列表 -->
+    <select id="findByUserId" resultMap="memberElderResultMap">
+        SELECT
+            id, user_id, elder_id, elder_id_card_no,
+            relation_type, relation, create_by, update_by,
+            remark, create_time, update_time
+        FROM member_elder
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据用户ID和老人ID查询绑定关系 -->
+    <select id="findByUserIdAndElderId" resultMap="memberElderResultMap">
+        SELECT
+            id, user_id, elder_id, elder_id_card_no,
+            relation_type, relation, create_by, update_by,
+            remark, create_time, update_time
+        FROM member_elder
+        WHERE user_id = #{userId} AND elder_id = #{elderId}
+        LIMIT 1
+    </select>
+
+    <!-- 根据ID删除绑定关系 -->
+    <delete id="deleteById">
+        DELETE FROM member_elder WHERE id = #{id}
+    </delete>
+
+    <!-- 根据用户ID和老人ID删除绑定关系 -->
+    <delete id="deleteByUserIdAndElderId">
+        DELETE FROM member_elder
+        WHERE user_id = #{userId} AND elder_id = #{elderId}
+    </delete>
+
+</mapper>

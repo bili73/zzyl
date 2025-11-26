@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzyl.mapper.BillMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.zzyl.entity.Bill">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="bill_no" property="billNo" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="elder_id" property="elderId" jdbcType="BIGINT"/>
+        <result column="elder_name" property="elderName" jdbcType="VARCHAR"/>
+        <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="transaction_status" property="transactionStatus" jdbcType="TINYINT"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="refund_time" property="refundTime" jdbcType="TIMESTAMP"/>
+        <result column="refund_reason" property="refundReason" jdbcType="VARCHAR"/>
+        <result column="bill_type" property="billType" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!-- 插入账单 -->
+    <insert id="insert" parameterType="com.zzyl.entity.Bill" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO bill (
+            bill_no, order_id, order_no, user_id, elder_id, elder_name,
+            project_id, project_name, amount, transaction_status,
+            pay_time, refund_time, refund_reason, bill_type,
+            create_time, update_time, create_by, update_by
+        ) VALUES (
+            #{billNo}, #{orderId}, #{orderNo}, #{userId}, #{elderId}, #{elderName},
+            #{projectId}, #{projectName}, #{amount}, #{transactionStatus},
+            #{payTime}, #{refundTime}, #{refundReason}, #{billType},
+            #{createTime}, #{updateTime}, #{createBy}, #{updateBy}
+        )
+    </insert>
+
+    <!-- 根据ID查询账单 -->
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT * FROM bill WHERE id = #{id}
+    </select>
+
+    <!-- 根据条件查询账单列表 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT * FROM bill
+        <where>
+            user_id = #{userId}
+            <if test="transactionStatus != null">
+                AND transaction_status = #{transactionStatus}
+            </if>
+            <if test="elderId != null and elderId > 0">
+                AND elder_id = #{elderId}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据订单ID查询账单数量 -->
+    <select id="countByOrderId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM bill WHERE order_id = #{orderId}
+    </select>
+
+</mapper>

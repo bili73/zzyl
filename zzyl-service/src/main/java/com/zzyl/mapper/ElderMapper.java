@@ -44,6 +44,15 @@ public interface ElderMapper {
     Elder selectByPrimaryKey(Long id);
 
     /**
+     * 根据主键选择老人信息（别名方法）
+     * @param id 主键
+     * @return 老人信息
+     */
+    default Elder selectById(Long id) {
+        return selectByPrimaryKey(id);
+    }
+
+    /**
      * 根据主键选择性更新老人信息
      * @param record 老人信息
      * @return 更新结果

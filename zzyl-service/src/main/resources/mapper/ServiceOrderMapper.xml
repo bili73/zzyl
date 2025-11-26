@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzyl.mapper.ServiceOrderMapper">
+
+    <resultMap id="serviceOrderResultMap" type="com.zzyl.entity.ServiceOrder">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="project_id" property="projectId"/>
+        <result column="project_name" property="projectName"/>
+        <result column="elder_id" property="elderId"/>
+        <result column="elder_name" property="elderName"/>
+        <result column="user_id" property="userId"/>
+        <result column="estimated_arrival_time" property="estimatedArrivalTime"/>
+        <result column="amount" property="amount"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <!-- 插入订单 -->
+    <insert id="insert" parameterType="com.zzyl.entity.ServiceOrder" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO service_order (
+            order_no, project_id, project_name, elder_id, elder_name, user_id,
+            estimated_arrival_time, amount, status, remark, create_time, create_by
+        ) VALUES (
+            #{orderNo}, #{projectId}, #{projectName}, #{elderId}, #{elderName}, #{userId},
+            #{estimatedArrivalTime}, #{amount}, #{status}, #{remark}, #{createTime}, #{createBy}
+        )
+    </insert>
+
+    <!-- 根据ID查询订单 -->
+    <select id="selectById" parameterType="java.lang.Long" resultMap="serviceOrderResultMap">
+        SELECT
+            id, order_no, project_id, project_name, elder_id, elder_name, user_id,
+            estimated_arrival_time, amount, status, remark,
+            create_time, update_time, create_by, update_by
+        FROM service_order
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户ID和状态查询订单列表 -->
+    <select id="selectByUserIdAndStatus" resultMap="serviceOrderResultMap">
+        SELECT
+            id, order_no, project_id, project_name, elder_id, elder_name, user_id,
+            estimated_arrival_time, amount, status, remark,
+            create_time, update_time, create_by, update_by
+        FROM service_order
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据条件查询订单列表（管理端） -->
+    <select id="selectByConditions" resultMap="serviceOrderResultMap">
+        SELECT
+            id, order_no, project_id, project_name, elder_id, elder_name, user_id,
+            estimated_arrival_time, amount, status, remark,
+            create_time, update_time, create_by, update_by
+        FROM service_order
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                AND order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="elderName != null and elderName != ''">
+                AND elder_name LIKE CONCAT('%', #{elderName}, '%')
+            </if>
+            <if test="projectName != null and projectName != ''">
+                AND project_name LIKE CONCAT('%', #{projectName}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 更新订单 -->
+    <update id="updateById" parameterType="com.zzyl.entity.ServiceOrder">
+        UPDATE service_order
+        <set>
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="elderName != null">elder_name = #{elderName},</if>
+            <if test="estimatedArrivalTime != null">estimated_arrival_time = #{estimatedArrivalTime},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

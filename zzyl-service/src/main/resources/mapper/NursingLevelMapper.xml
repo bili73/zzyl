@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzyl.mapper.NursingLevelMapper">
+
+    <resultMap id="nursingLevelResultMap" type="com.zzyl.entity.NursingLevel">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="fee" property="fee"/>
+        <result column="status" property="status"/>
+        <result column="sortNo" property="sortNo"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="creator" property="creator"/>
+    </resultMap>
+
+    <resultMap id="nursingLevelDetailResultMap" type="com.zzyl.entity.NursingLevel" extends="nursingLevelResultMap">
+        <result column="plan_name" property="planName"/>
+        <result column="plan_id" property="planId"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="nursingLevelResultMap">
+        select * from nursing_level where status = 1 order by create_time desc
+    </select>
+
+    <select id="selectByPage" resultMap="nursingLevelDetailResultMap">
+        select l.*, su.real_name as creator,
+               p.plan_name as plan_name,
+               p.id as plan_id
+        from nursing_level l
+        left join sys_user su on l.create_by = su.id
+        left join nursing_plan p on p.id = l.lplan_id
+        <where>
+            <if test="name != null and name != ''">
+                and l.name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and l.status = #{status}
+            </if>
+        </where>
+        order by l.create_time desc
+    </select>
+
+    <!-- 新增护理等级 -->
+    <insert id="insert">
+        insert into nursing_level (name, description, fee, status, sortNo, create_by,
+                                   update_by, remark, create_time, update_time)
+        values (#{name}, #{description}, #{fee}, #{status}, #{sortNo}, #{createBy},
+                #{updateBy}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="selectById" resultMap="nursingLevelDetailResultMap">
+        select l.*, p.plan_name as plan_name, p.id as plan_id
+        from nursing_level l
+        left join nursing_plan p on p.id = l.lplan_id
+        where l.id = #{id}
+    </select>
+
+    <update id="update">
+        update nursing_level
+        set name        = #{name},
+            description = #{description},
+            fee        = #{fee},
+            status      = #{status},
+            sortNo     = #{sortNo},
+            update_by   = #{updateBy},
+            remark      = #{remark},
+            update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from nursing_level where id = #{id}
+    </delete>
+
+</mapper>

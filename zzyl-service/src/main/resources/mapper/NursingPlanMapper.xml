@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzyl.mapper.NursingPlanMapper">
+
+    <resultMap id="nursingPlanResultMap" type="com.zzyl.entity.NursingPlan">
+        <id column="id" property="id"/>
+        <result column="plan_name" property="name"/>
+        <result column="sort_no" property="sortNo"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="nursingPlanDetailResultMap" type="com.zzyl.entity.NursingPlan" extends="nursingPlanResultMap">
+        <result column="creator" property="creator"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="nursingPlanResultMap">
+        select * from nursing_plan where status = 1 order by create_time desc
+    </select>
+
+    <select id="selectByPage" resultMap="nursingPlanDetailResultMap">
+        select p.*,
+               su.real_name as creator
+        from nursing_plan p
+        left join sys_user su on p.create_by = su.id
+        <where>
+            <if test="name != null and name != ''">
+                and p.plan_name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and p.status = #{status}
+            </if>
+        </where>
+        order by p.create_time desc
+    </select>
+
+    <!-- 新增护理计划 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into nursing_plan (plan_name, sort_no, status, remark, create_by,
+                                   update_by, create_time, update_time)
+        values (#{name}, #{sortNo}, #{status}, #{remark}, #{createBy},
+                #{updateBy}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="selectById" resultMap="nursingPlanDetailResultMap">
+        select p.*,
+               su.real_name as creator
+        from nursing_plan p
+        left join sys_user su on p.create_by = su.id
+        where p.id = #{id}
+    </select>
+
+    <update id="update">
+        update nursing_plan
+        set plan_name         = #{name},
+            sort_no           = #{sortNo},
+            status            = #{status},
+            remark            = #{remark},
+            update_by         = #{updateBy},
+            update_time       = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from nursing_plan where id = #{id}
+    </delete>
+
+    <!-- 查询护理计划关联的项目ID列表 -->
+    <select id="selectProjectIdsByPlanId" resultType="java.lang.Long">
+        select project_id from nursing_project_plan where plan_id = #{planId}
+    </select>
+
+    <!-- 插入护理计划项目关联关系 -->
+    <insert id="insertPlanProject">
+        insert into nursing_project_plan (plan_id, project_id, create_by, create_time)
+        values (#{planId}, #{projectId}, #{planId}, NOW())
+    </insert>
+
+    <!-- 删除护理计划项目关联关系 -->
+    <delete id="deletePlanProjectByPlanId">
+        delete from nursing_project_plan where plan_id = #{planId}
+    </delete>
+
+</mapper>
