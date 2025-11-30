@@ -21,6 +21,10 @@
             <groupId>com.zzyl</groupId>
             <artifactId>zzyl-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.zzyl</groupId>
+            <artifactId>zzyl-security</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

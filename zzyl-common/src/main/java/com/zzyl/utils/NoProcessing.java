@@ -17,6 +17,10 @@ public class NoProcessing {
  * @return: java.lang.String
      */
     public static String processString(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
         int step = input.length() / 3;
         for (int i =0;i<step;i++ ){
             String targetString = input.substring(input.length()-3,input.length());
@@ -44,6 +48,10 @@ public class NoProcessing {
      * @return: java.lang.String
      */
     public static String createNo(String input,boolean peerNode) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
         int step = input.length() / 3;
         int supplement = 0;
         for (int i =0;i<step;i++ ){

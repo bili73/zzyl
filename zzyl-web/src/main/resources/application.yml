@@ -31,7 +31,7 @@ spring:
 # MyBatis配置
 mybatis:
   #mapper配置文件
-  mapper-locations: classpath*:mapper*/*Mapper.xml
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
   type-aliases-package: com.zzyl.entity
   configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用

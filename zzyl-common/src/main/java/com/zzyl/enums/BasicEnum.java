@@ -75,7 +75,14 @@ public enum BasicEnum implements IBasicEnum {
     RETREAT_SHOULD_IN_COST_TERM(1528, "请在费用期限内发起退住申请"),
     UPLOAD_FILE_EMPTY(1529, "上传图片不能为空"),
     DONE_ORDER_CANNOT_REFUND(1530, "已执行的订单不可退款"),
-    BED_INSERT_FAIL(1531,"床位新增失败");
+    BED_INSERT_FAIL(1531,"床位新增失败"),
+
+    //资源管理相关异常：1540-1549
+    ID_NOT_NULL(1540, "ID不能为空"),
+    RESOURCE_NOT_FOUND(1541, "资源不存在"),
+    RESOURCE_NO_NOT_NULL(1542, "资源编号不能为空"),
+    DATA_STATE_NOT_NULL(1543, "数据状态不能为空"),
+    HAS_CHILD_RESOURCES(1544, "存在子资源，不能删除");
 
     /**
      * 编码
