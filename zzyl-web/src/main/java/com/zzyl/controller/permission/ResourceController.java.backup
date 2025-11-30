@@ -1,0 +1,125 @@
+package com.zzyl.controller.permission;
+
+
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.zzyl.base.ResponseResult;
+import com.zzyl.dto.ResourceDto;
+import com.zzyl.entity.Resource;
+import com.zzyl.enums.BasicEnum;
+import com.zzyl.exception.BaseException;
+import com.zzyl.service.ResourceService;
+import com.zzyl.vo.ResourceVo;
+import com.zzyl.vo.TreeVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 资源前端控制器
+ */
+@Slf4j
+@Api(tags = "资源管理")
+@RestController
+@RequestMapping("/resource")
+public class ResourceController {
+    @Autowired
+    private ResourceService resourceService;
+
+    @PostMapping("/list")
+    @ApiOperation(value = "资源列表", notes = "资源列表")
+    @ApiImplicitParam(name = "resourceDto", value = "资源DTO对象", required = true, dataType = "ResourceDto")
+    @ApiOperationSupport(includeParameters = {"resourceDto.parentResourceNo", "resourceDto.resourceType"})
+    public ResponseResult<List<ResourceVo>> resourceList(@RequestBody ResourceDto resourceDto) {
+        List<ResourceVo> resourceList = resourceService.findResourceList(resourceDto);
+        return ResponseResult.success(resourceList);
+    }
+
+    @PostMapping("/tree")
+    @ApiOperation(value = "资源树形", notes = "资源树形")
+    @ApiImplicitParam(name = "resourceDto", value = "资源DTO对象", required = true, dataType = "ResourceDto")
+    @ApiOperationSupport(includeParameters = {"resourceDto.label"})
+    public ResponseResult<TreeVo> resourceTreeVo(@RequestBody ResourceDto resourceDto) {
+        TreeVo treeVo = resourceService.resourceTreeVo(resourceDto);
+        return ResponseResult.success(treeVo);
+    }
+
+    @PutMapping
+    @ApiOperation(value = "资源添加", notes = "资源添加")
+    @ApiImplicitParam(name = "resourceDto", value = "资源DTO对象", required = true, dataType = "ResourceDto")
+    @ApiOperationSupport(includeParameters = {"resourceDto.dataState"
+            , "resourceDto.icon"
+            , "resourceDto.parentResourceNo"
+            , "resourceDto.requestPath"
+            , "resourceDto.resourceName"
+            , "resourceDto.resourceType"
+            , "resourceDto.sortNo"})
+    public ResponseResult<ResourceVo> createResource(@RequestBody ResourceDto resourceDto) {
+        resourceService.createResource(resourceDto);
+        return ResponseResult.success();
+    }
+
+    @PatchMapping
+    @ApiOperation(value = "资源修改", notes = "资源修改")
+    @ApiImplicitParam(name = "resourceDto", value = "资源DTO对象", required = true, dataType = "ResourceDto")
+    @ApiOperationSupport(includeParameters = {
+            "resourceDto.id",
+            "resourceDto.dataState",
+            "resourceDto.icon",
+            "resourceDto.parentResourceNo",
+            "resourceDto.requestPath",
+            "resourceDto.resourceName",
+            "resourceDto.resourceType",
+            "resourceDto.sortNo"})
+    public ResponseResult<Boolean> updateResource(@RequestBody ResourceDto resourceDto) {
+        if (resourceDto.getId() == null) {
+            throw new BaseException(BasicEnum.ID_NOT_NULL);
+        }
+
+        // 查询资源是否存在
+        Resource existingResource = resourceService.getResourceMapper().selectByPrimaryKey(resourceDto.getId());
+        if (existingResource == null) {
+            throw new BaseException(BasicEnum.RESOURCE_NOT_FOUND);
+        }
+
+        // 创建Resource对象并更新字段
+        Resource resource = new Resource();
+        resource.setId(resourceDto.getId());
+
+        if (resourceDto.getDataState() != null) resource.setDataState(resourceDto.getDataState());
+        if (resourceDto.getIcon() != null) resource.setIcon(resourceDto.getIcon());
+        if (resourceDto.getParentResourceNo() != null) resource.setParentResourceNo(resourceDto.getParentResourceNo());
+        if (resourceDto.getRequestPath() != null) resource.setRequestPath(resourceDto.getRequestPath());
+        if (resourceDto.getResourceName() != null) resource.setResourceName(resourceDto.getResourceName());
+        if (resourceDto.getResourceType() != null) resource.setResourceType(resourceDto.getResourceType());
+        if (resourceDto.getSortNo() != null) resource.setSortNo(resourceDto.getSortNo());
+
+        resourceService.getResourceMapper().updateByPrimaryKeySelective(resource);
+        return ResponseResult.success(true);
+    }
+
+    @PatchMapping("/is_enable")
+    @ApiOperation(value = "启用/禁用资源", notes = "启用/禁用资源")
+    @ApiImplicitParam(name = "resourceDto", value = "资源DTO对象", required = true, dataType = "ResourceDto")
+    @ApiOperationSupport(includeParameters = {"resourceDto.resourceNo"
+            , "resourceDto.parentResourceNo"
+            , "resourceDto.dataState"})
+    public ResponseResult<Boolean> enableDisableResource(@RequestBody ResourceDto resourceDto) {
+        resourceService.enableDisableResource(resourceDto);
+        return ResponseResult.success(true);
+    }
+
+    @DeleteMapping("/{resourceId}")
+    @ApiOperation(value = "删除资源", notes = "删除资源")
+    @ApiImplicitParam(name = "resourceId", value = "资源ID", required = true, dataType = "Long", paramType = "path")
+    public ResponseResult<Integer> deleteResource(@PathVariable Long resourceId) {
+        resourceService.deleteResource(resourceId);
+        return ResponseResult.success(1);
+    }
+
+
+}
