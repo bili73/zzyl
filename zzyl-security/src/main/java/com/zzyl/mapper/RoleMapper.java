@@ -28,4 +28,18 @@ public interface RoleMapper {
      * @author hewei
      */
     int batchInsert(@Param("list") List<Role> list);
+
+    /**
+     * 查询所有角色
+     * @return 角色列表
+     */
+    List<Role> selectAll();
+
+    /**
+     * 根据条件查询角色列表
+     * @param roleName 角色名称
+     * @param dataState 数据状态
+     * @return 角色列表
+     */
+    List<Role> selectByCondition(@Param("roleName") String roleName, @Param("dataState") String dataState);
 }

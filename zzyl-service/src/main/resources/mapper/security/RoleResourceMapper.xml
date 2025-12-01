@@ -153,4 +153,19 @@
        (#{item.roleId,jdbcType=BIGINT}, #{item.resourceNo,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.dataState,jdbcType=CHAR}, #{item.createBy,jdbcType=BIGINT}, #{item.updateBy,jdbcType=BIGINT}, #{item.remark,jdbcType=VARCHAR})
     </foreach>
   </insert>
+
+  <!-- 根据角色ID删除角色资源关联 -->
+  <delete id="deleteByRoleId" parameterType="java.lang.Long">
+    delete from sys_role_resource
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </delete>
+
+  <!-- 根据角色ID查询角色资源关联 -->
+  <select id="selectByRoleId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_role_resource
+    where role_id = #{roleId,jdbcType=BIGINT}
+    order by id ASC
+  </select>
 </mapper>

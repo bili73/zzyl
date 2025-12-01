@@ -69,6 +69,11 @@ public class UserVo extends BaseVo {
 
     @ApiModelProperty(value = "职位编号【当前】")
     private String postNo;
+    @ApiModelProperty(value = "部门名称【显示用】")
+    private String deptName;
+
+    @ApiModelProperty(value = "职位名称【显示用】")
+    private String postName;
 
     @ApiModelProperty(value = "角色Id【当前】")
     private Long roleId;

@@ -116,4 +116,35 @@ public class PostController {
         return ResponseResult.success(postVoList);
     }
 
+    /**
+     * 岗位下拉列表（支持GET请求）
+     * @param deptNo 部门编号（可选）
+     * @return 岗位列表
+     */
+    @ApiOperation(value = "岗位下拉列表", notes = "获取所有启用的岗位列表，用于下拉选择")
+    @GetMapping("/optionselect")
+    public ResponseResult<List<PostVo>> getPostOptions(@RequestParam(required = false) String deptNo) {
+        PostDto postDto = new PostDto();
+        postDto.setDeptNo(deptNo);
+        postDto.setDataState("0"); // 只查询启用的岗位
+        List<PostVo> postVoList = postService.findPostList(postDto);
+        return ResponseResult.success(postVoList);
+    }
+
+    /**
+     * 岗位下拉列表（支持POST请求）
+     * @param postDto 岗位查询条件（可选）
+     * @return 岗位列表
+     */
+    @ApiOperation(value = "岗位下拉列表（POST）", notes = "获取所有启用的岗位列表，用于下拉选择")
+    @PostMapping("/optionselect")
+    public ResponseResult<List<PostVo>> getPostOptionsPost(@RequestBody(required = false) PostDto postDto) {
+        if (postDto == null) {
+            postDto = new PostDto();
+        }
+        postDto.setDataState("0"); // 只查询启用的岗位
+        List<PostVo> postVoList = postService.findPostList(postDto);
+        return ResponseResult.success(postVoList);
+    }
+
 }

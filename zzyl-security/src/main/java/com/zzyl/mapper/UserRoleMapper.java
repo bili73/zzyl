@@ -29,4 +29,11 @@ public interface UserRoleMapper {
      * @author hewei
      */
     int batchInsert(@Param("list") List<UserRole> list);
+
+    // 自定义查询方法
+    List<UserRole> selectByUserId(@Param("userId") Long userId);
+
+    int deleteByUserId(@Param("userId") Long userId);
+
+    int deleteByUserIds(@Param("list") List<Long> userIds);
 }

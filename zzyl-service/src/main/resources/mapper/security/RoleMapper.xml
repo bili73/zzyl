@@ -175,4 +175,27 @@
        (#{item.roleName,jdbcType=VARCHAR}, #{item.label,jdbcType=VARCHAR}, #{item.sortNo,jdbcType=INTEGER}, #{item.dataState,jdbcType=CHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=BIGINT}, #{item.updateBy,jdbcType=BIGINT}, #{item.dataScope,jdbcType=CHAR})
     </foreach>
   </insert>
+<!-- 查询所有角色 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_role
+    order by sort_no ASC, id ASC
+  </select>
+
+  <!-- 根据条件查询角色列表 -->
+  <select id="selectByCondition" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_role
+    <where>
+      <if test="roleName != null and roleName != ''">
+        AND role_name LIKE CONCAT('%', #{roleName}, '%')
+      </if>
+      <if test="dataState != null and dataState != ''">
+        AND data_state = #{dataState}
+      </if>
+    </where>
+    order by sort_no ASC, id ASC
+  </select>
 </mapper>

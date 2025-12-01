@@ -26,13 +26,13 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, username, open_id, password, user_type, avatar, nick_name, email, real_name, 
-    mobile, sex, data_state, dept_no, post_no, create_time, update_time, remark, create_by, 
+    id, username, open_id, password, user_type, avatar, nick_name, email, real_name,
+    mobile, sex, data_state, dept_no, post_no, create_time, update_time, remark, create_by,
     update_by, is_leader, is_delete
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from sys_user
     where id = #{id,jdbcType=BIGINT}
@@ -46,19 +46,19 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into sys_user (username, open_id, password, 
-      user_type, avatar, nick_name, 
-      email, real_name, mobile, 
-      sex, data_state, dept_no, post_no, 
-      create_time, update_time, remark, 
-      create_by, update_by, is_leader, 
+    insert into sys_user (username, open_id, password,
+      user_type, avatar, nick_name,
+      email, real_name, mobile,
+      sex, data_state, dept_no, post_no,
+      create_time, update_time, remark,
+      create_by, update_by, is_leader,
       is_delete)
-    values (#{username,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{userType,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
-      #{sex,jdbcType=CHAR}, #{dataState,jdbcType=CHAR}, #{deptNo,jdbcType=VARCHAR}, #{postNo,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=BIGINT}, #{updateBy,jdbcType=BIGINT}, #{isLeader,jdbcType=INTEGER}, 
+    values (#{username,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{userType,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
+      #{sex,jdbcType=CHAR}, #{dataState,jdbcType=CHAR}, #{deptNo,jdbcType=VARCHAR}, #{postNo,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
+      #{createBy,jdbcType=BIGINT}, #{updateBy,jdbcType=BIGINT}, #{isLeader,jdbcType=INTEGER},
       #{isDelete,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.zzyl.entity.User">
@@ -282,15 +282,76 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="java.util.List" useGeneratedKeys="true">
-    <!--
-      WARNING - @mbg.generated
-      这个节点为代码生成工具生成，请不要修改!
-      @author hewei
-    -->
     insert into sys_user (username, open_id, password, user_type, avatar, nick_name, email, real_name, mobile, sex, data_state, dept_no, post_no, create_time, update_time, remark, create_by, update_by, is_leader, is_delete)
     values
     <foreach collection="list" item="item" separator=",">
        (#{item.username,jdbcType=VARCHAR}, #{item.openId,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, #{item.userType,jdbcType=VARCHAR}, #{item.avatar,jdbcType=VARCHAR}, #{item.nickName,jdbcType=VARCHAR}, #{item.email,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.sex,jdbcType=CHAR}, #{item.dataState,jdbcType=CHAR}, #{item.deptNo,jdbcType=VARCHAR}, #{item.postNo,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=BIGINT}, #{item.updateBy,jdbcType=BIGINT}, #{item.isLeader,jdbcType=INTEGER}, #{item.isDelete,jdbcType=INTEGER})
     </foreach>
   </insert>
+
+  <!-- 自定义查询方法 -->
+  <select id="selectAll" parameterType="com.zzyl.entity.User" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    <where>
+      <if test="dataState != null and dataState != ''">
+        AND data_state = #{dataState,jdbcType=CHAR}
+      </if>
+      <if test="realName != null and realName != ''">
+        AND real_name LIKE CONCAT('%', #{realName,jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="email != null and email != ''">
+        AND email LIKE CONCAT('%', #{email,jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="mobile != null and mobile != ''">
+        AND mobile LIKE CONCAT('%', #{mobile,jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="deptNo != null and deptNo != ''">
+        AND dept_no = #{deptNo,jdbcType=VARCHAR}
+      </if>
+      <if test="postNo != null and postNo != ''">
+        AND post_no = #{postNo,jdbcType=VARCHAR}
+      </if>
+      <if test="username != null and username != ''">
+        AND username LIKE CONCAT('%', #{username,jdbcType=VARCHAR}, '%')
+      </if>
+      AND is_delete = 0
+    </where>
+    ORDER BY create_time DESC
+  </select>
+
+  <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where username = #{username,jdbcType=VARCHAR}
+    AND is_delete = 0
+  </select>
+
+  <select id="selectByOpenId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where open_id = #{openId,jdbcType=VARCHAR}
+    AND is_delete = 0
+  </select>
+  <select id="selectByRealName" parameterType="java.lang.String" resultMap="BaseResultMap">
+
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where real_name = #{realName,jdbcType=VARCHAR}
+    AND is_delete = 0
+  </select>
+
+
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from sys_user
+    where id in
+    <foreach collection="list" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
 </mapper>

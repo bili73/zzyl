@@ -1,51 +1,54 @@
 package com.zzyl.service;
 
-import com.github.pagehelper.Page;
-import com.zzyl.entity.Role;
+import com.zzyl.base.PageResponse;
+import com.zzyl.dto.RoleDto;
+import com.zzyl.vo.RoleVo;
+
+import java.util.List;
+import java.util.Set;
 
 public interface RoleService {
 
     /**
-     * 分页查询角色列表
-     * @param role 角色查询条件
-     * @param pageNum 当前页码
-     * @param pageSize 每页记录数
+     * 角色分页查询
+     * @param roleDto 角色查询条件
+     * @param pageNum 页码
+     * @param pageSize 每页条数
      * @return 分页结果
      */
-    Page<Role> selectRoleByPage(Role role, Integer pageNum, Integer pageSize);
+    PageResponse<RoleVo> findRoleVoPage(RoleDto roleDto, Integer pageNum, Integer pageSize);
 
     /**
-     * 根据ID获取角色
-     * @param id 角色ID
-     * @return 角色信息
+     * 创建角色
+     * @param roleDto 角色DTO
+     * @return 角色VO
      */
-    Role selectRoleById(Long id);
-
-    /**
-     * 新增角色
-     * @param role 角色信息
-     * @return 是否成功
-     */
-    Boolean insertRole(Role role);
+    RoleVo createRole(RoleDto roleDto);
 
     /**
      * 更新角色
-     * @param role 角色信息
+     * @param roleDto 角色DTO
      * @return 是否成功
      */
-    Boolean updateRole(Role role);
+    Boolean updateRole(RoleDto roleDto);
 
     /**
-     * 删除角色
-     * @param id 角色ID
+     * 根据角色ID删除角色
+     * @param roleId 角色ID
      * @return 是否成功
      */
-    Boolean deleteRoleById(Long id);
+    Boolean removeRole(Long roleId);
 
     /**
-     * 批量删除角色
-     * @param ids 角色ID列表
-     * @return 是否成功
+     * 根据角色查询选中的资源数据
+     * @param roleId 角色ID
+     * @return 资源编号集合
      */
-    Boolean deleteRoleByIds(Long[] ids);
+    Set<String> findCheckedResources(Long roleId);
+
+    /**
+     * 获取角色下拉列表
+     * @return 角色列表
+     */
+    List<RoleVo> initRoles();
 }

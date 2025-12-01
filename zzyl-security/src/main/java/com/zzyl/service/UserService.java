@@ -1,7 +1,10 @@
 package com.zzyl.service;
 
 import com.github.pagehelper.Page;
+import com.zzyl.base.PageResponse;
+import com.zzyl.dto.UserDto;
 import com.zzyl.entity.User;
+import com.zzyl.vo.UserVo;
 
 import java.util.List;
 
@@ -80,4 +83,41 @@ public interface UserService {
      * @return 是否成功
      */
     Boolean updateDataState(Long id, String dataState);
+
+    // ==================== 扩展业务方法 ====================
+
+    /**
+     * 分页查询用户（包含角色信息）
+     */
+    PageResponse<UserVo> findUserVoPage(UserDto userDto, Integer pageNum, Integer pageSize);
+
+    /**
+     * 创建用户（包含角色关联）
+     */
+    UserVo createUser(UserDto userDto);
+
+    /**
+     * 更新用户（包含角色关联）
+     */
+    Boolean updateUser(UserDto userDto);
+
+    /**
+     * 获取当前用户信息
+     */
+    UserVo getCurrentUser();
+
+    /**
+     * 启用或禁用用户
+     */
+    Boolean isEnable(Long id, String status);
+
+    /**
+     * 删除用户
+     */
+    Boolean removeUser(Long userId);
+
+    /**
+     * 重置密码
+     */
+    Boolean resetPassword(Long userId);
 }

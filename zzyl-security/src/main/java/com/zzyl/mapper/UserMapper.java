@@ -29,4 +29,14 @@ public interface UserMapper {
      * @author hewei
      */
     int batchInsert(@Param("list") List<User> list);
+
+    // 自定义查询方法
+    List<User> selectAll(User user);
+
+    User selectByUsername(@Param("username") String username);
+
+    User selectByOpenId(@Param("openId") String openId);
+    User selectByRealName(@Param("realName") String realName);
+
+    int deleteByIds(@Param("list") List<Long> ids);
 }
