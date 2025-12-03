@@ -1,6 +1,7 @@
 package com.zzyl.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.zzyl.constant.CacheConstant;
 import com.zzyl.constant.SuperConstant;
 import com.zzyl.dto.ResourceDto;
 import com.zzyl.entity.Resource;
@@ -15,6 +16,8 @@ import com.zzyl.vo.ResourceVo;
 import com.zzyl.vo.TreeItemVo;
 import com.zzyl.vo.TreeVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,40 +30,37 @@ import java.util.stream.Collectors;
 public class ResourceServiceImpl implements ResourceService {
     @Autowired
     private ResourceMapper resourceMapper;
+
     /**
      * 根据不同条件查询资源列表
      * @param resourceDto
      * @return
      */
     @Override
+    @Cacheable(value = CacheConstant.RESOURCE_LIST_CACHE, key = "#resourceDto.hashCode()", unless = "#result == null or #result.size() == 0")
     public List<ResourceVo> findResourceList(ResourceDto resourceDto) {
         List<Resource> resources = resourceMapper.selectList(resourceDto);
         return BeanUtil.copyToList(resources, ResourceVo.class);
     }
 
     @Override
+    @Cacheable(value = CacheConstant.RESOURCE_TREE_CACHE, unless = "#result == null")
     public TreeVo resourceTreeVo(ResourceDto resourceDto) {
-        //构建查询条件
         ResourceDto dto = ResourceDto.builder()
                 .dataState(SuperConstant.DATA_STATE_0)
                 .parentResourceNo(NoProcessing.processString(SuperConstant.ROOT_PARENT_ID))
                 .resourceType(SuperConstant.MENU).build();
-        //构建所有根节点数据
         List<Resource> resourcesList = resourceMapper.selectList(dto);
         if(EmptyUtil.isNullOrEmpty(resourcesList)){
             throw new RuntimeException("资源信息未定义");
         }
-        //没有根节点，构建根节点
         Resource rootResource = new Resource();
         rootResource.setResourceNo(SuperConstant.ROOT_PARENT_ID);
         rootResource.setResourceName(("智慧养老院"));
-        //返回的树形集合
         List<TreeItemVo> itemVos = new ArrayList<>();
 
-        //使用递归构建树形结构
         recursionTreeItem(itemVos,rootResource,resourcesList);
 
-        // 返回构建好的树形数据
         TreeVo treeVo = new TreeVo();
         treeVo.setItems(itemVos);
         return treeVo;
@@ -71,6 +71,14 @@ public class ResourceServiceImpl implements ResourceService {
      * @param resourceDto
      */
     @Override
+    @CacheEvict(value = {
+            CacheConstant.RESOURCE_CACHE,
+            CacheConstant.RESOURCE_LIST_CACHE,
+            CacheConstant.RESOURCE_TREE_CACHE,
+            CacheConstant.ROLE_RESOURCES_CACHE,
+            CacheConstant.USER_PERMISSIONS_CACHE
+    }, allEntries = true)
+    @Transactional
     public void createResource(ResourceDto resourceDto) {
         //属性拷贝
         Resource resource = BeanUtil.toBean(resourceDto, Resource.class);
@@ -94,6 +102,14 @@ public class ResourceServiceImpl implements ResourceService {
      * @param resourceDto
      */
     @Override
+    @CacheEvict(value = {
+            CacheConstant.RESOURCE_CACHE,
+            CacheConstant.RESOURCE_LIST_CACHE,
+            CacheConstant.RESOURCE_TREE_CACHE,
+            CacheConstant.ROLE_RESOURCES_CACHE,
+            CacheConstant.USER_PERMISSIONS_CACHE
+    }, allEntries = true)
+    @Transactional
     public void enableDisableResource(ResourceDto resourceDto) {
         if (StringUtils.isEmpty(resourceDto.getResourceNo())) {
             throw new BaseException(BasicEnum.RESOURCE_NO_NOT_NULL);
@@ -117,11 +133,19 @@ public class ResourceServiceImpl implements ResourceService {
         updateChildrenState(resource.getResourceNo(), resourceDto.getDataState());
     }
 
-      /**
+    /**
      * 删除资源
      * @param resourceId
      */
     @Override
+    @CacheEvict(value = {
+            CacheConstant.RESOURCE_CACHE,
+            CacheConstant.RESOURCE_LIST_CACHE,
+            CacheConstant.RESOURCE_TREE_CACHE,
+            CacheConstant.ROLE_RESOURCES_CACHE,
+            CacheConstant.USER_PERMISSIONS_CACHE
+    }, allEntries = true)
+    @Transactional
     public void deleteResource(Long resourceId) {
         if (resourceId == null) {
             throw new BaseException(BasicEnum.ID_NOT_NULL);
@@ -159,7 +183,6 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceMapper;
     }
 
-
     //创建资源编号
     private String createResourceNo(String resourceNo, boolean isIgnore) {
         // 检查resourceNo是否为空
@@ -192,7 +215,6 @@ public class ResourceServiceImpl implements ResourceService {
             return NoProcessing.createNo(String.valueOf(maxNo),true);
         }
     }
-
 
     private void recursionTreeItem(List<TreeItemVo> itemVos, Resource rootResource, List<Resource> resourcesList) {
         //构建当前资源的属性值
@@ -237,11 +259,19 @@ public class ResourceServiceImpl implements ResourceService {
             }
         }
     }
+
   /**
      * 根据资源编号删除资源
      * @param resourceNo
      */
     @Override
+    @CacheEvict(value = {
+            CacheConstant.RESOURCE_CACHE,
+            CacheConstant.RESOURCE_LIST_CACHE,
+            CacheConstant.RESOURCE_TREE_CACHE,
+            CacheConstant.ROLE_RESOURCES_CACHE,
+            CacheConstant.USER_PERMISSIONS_CACHE
+    }, allEntries = true)
     @Transactional
     public void deleteResourceByResourceNo(String resourceNo) {
         if (resourceNo == null || resourceNo.trim().isEmpty()) {

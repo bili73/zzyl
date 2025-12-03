@@ -16,11 +16,14 @@ import com.zzyl.mapper.DeptMapper;
 import com.zzyl.mapper.PostMapper;
 import com.zzyl.service.DeptService;
 import com.zzyl.service.PostService;
+import com.zzyl.config.CacheConstant;
 import com.zzyl.utils.EmptyUtil;
 import com.zzyl.utils.NoProcessing;
 import com.zzyl.vo.DeptVo;
 import com.zzyl.vo.PostVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -51,7 +54,12 @@ public class PostServiceImpl implements PostService {
      * @return Page<PostVo>
      */
     @Override
+    @Cacheable(value = CacheConstant.POST_LIST_CACHE,
+               key = "'post_list_' + (#postDto?.deptNo != null ? #postDto.deptNo : 'all') + '_' + #pageNum + '_' + #pageSize",
+               unless = "#result == null or #result.total == 0")
     public PageResponse<PostVo> findPostPage(PostDto postDto, int pageNum, int pageSize) {
+        System.out.println("=== CACHE MISS: findPostPage called with postDto=" + postDto + ", pageNum=" + pageNum + ", pageSize=" + pageSize);
+
         PageHelper.startPage(pageNum, pageSize);
         if (EmptyUtil.isNullOrEmpty(postDto.getDeptNo())) {
             throw new BaseException(BasicEnum.DEPT_NULL_EXCEPTION);
@@ -87,6 +95,7 @@ public class PostServiceImpl implements PostService {
      * @return PostDto
      */
     @Override
+    @CacheEvict(value = {CacheConstant.POST_CACHE, CacheConstant.POST_LIST_CACHE}, allEntries = true)
     public PostVo createPost(PostDto postDto) {
         //转换PostVo为Post
 
@@ -155,7 +164,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Cacheable(value = CacheConstant.POST_LIST_CACHE,
+               key = "'post_list_enabled_' + (#postDto?.deptNo != null ? #postDto.deptNo : 'all')",
+               unless = "#result == null or #result.size() == 0")
     public List<PostVo> findPostList(PostDto postDto) {
+        System.out.println("=== CACHE MISS: findPostList called with postDto=" + postDto);
 
         postDto.setDataState("0");
         List<Post> postList = postMapper.selectList(postDto);

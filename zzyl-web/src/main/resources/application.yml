@@ -33,7 +33,13 @@ spring:
     port: 6379
     password:
     database: 1
-# MyBatis配置
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+  # MyBatis配置
 mybatis:
   #mapper配置文件
   mapper-locations: classpath*:mapper/**/*Mapper.xml

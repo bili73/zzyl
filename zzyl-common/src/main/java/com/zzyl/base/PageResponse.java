@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import java.util.function.Function;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class PageResponse<T> {
+public class PageResponse<T> implements Serializable {
 
     @ApiModelProperty(value = "总条目数", required = true)
     private Long total = 0L;

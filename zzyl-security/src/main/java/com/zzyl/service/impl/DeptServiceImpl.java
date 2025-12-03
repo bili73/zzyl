@@ -20,6 +20,9 @@ import com.zzyl.vo.TreeItemVo;
 import com.zzyl.vo.TreeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.zzyl.config.CacheConstant;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -41,12 +44,13 @@ public class DeptServiceImpl implements DeptService {
     private PostMapper postMapper;
 
     /**
+     * 创建部门表
      * @param deptDto 对象信息
      * @return DeptVo
-     *  创建部门表
      */
     @Transactional
     @Override
+    @CacheEvict(value = {CacheConstant.DEPT_CACHE, CacheConstant.DEPT_LIST_CACHE, CacheConstant.DEPT_TREE_CACHE}, allEntries = true)
     public Boolean createDept(DeptDto deptDto) {
         //转换deptDto为Dept
         Dept dept = BeanUtil.toBean(deptDto, Dept.class);
@@ -73,12 +77,13 @@ public class DeptServiceImpl implements DeptService {
     }
 
     /**
+     * 修改部门表
      * @param deptDto 对象信息
      * @return Boolean
-     *  修改部门表
      */
     @Transactional
     @Override
+    @CacheEvict(value = {CacheConstant.DEPT_CACHE, CacheConstant.DEPT_LIST_CACHE, CacheConstant.DEPT_TREE_CACHE}, allEntries = true)
     public Boolean updateDept(DeptDto deptDto) {
         //转换DeptVo为Dept
         Dept dept = BeanUtil.toBean(deptDto, Dept.class);
@@ -102,12 +107,17 @@ public class DeptServiceImpl implements DeptService {
     }
 
     /**
+     * 多条件查询部门表列表
      * @param deptDto 查询条件
-     *  多条件查询部门表列表
      * @return: List<DeptVo>
      */
     @Override
+    @Cacheable(value = CacheConstant.DEPT_LIST_CACHE,
+               key = "'dept_list_' + (#deptDto?.dataState != null ? #deptDto.dataState : 'all') + '_' + (#deptDto?.parentDeptNo != null ? #deptDto.parentDeptNo : 'all')",
+               unless = "#result == null or #result.size() == 0")
     public List<DeptVo> findDeptList(DeptDto deptDto) {
+        System.out.println("=== CACHE MISS: findDeptList called with deptDto=" + deptDto);
+
         List<Dept> deptList = deptMapper.selectList(deptDto);
         List<DeptVo> deptVos = BeanUtil.copyToList(deptList, DeptVo.class);
         deptVos.forEach(v -> v.setCreateDay(LocalDateTimeUtil.format(v.getCreateTime(), "yyyy-MM-dd")));
@@ -150,6 +160,7 @@ public class DeptServiceImpl implements DeptService {
 
     @Transactional
     @Override
+    @CacheEvict(value = {CacheConstant.DEPT_CACHE, CacheConstant.DEPT_LIST_CACHE, CacheConstant.DEPT_TREE_CACHE}, allEntries = true)
     public int deleteDeptById(String deptId) {
         if (hasChildByDeptId(deptId)) {
             throw new RuntimeException("存在下级部门,不允许删除");
@@ -167,6 +178,7 @@ public class DeptServiceImpl implements DeptService {
      * @return
      */
     @Override
+    @CacheEvict(value = {CacheConstant.DEPT_CACHE, CacheConstant.DEPT_LIST_CACHE, CacheConstant.DEPT_TREE_CACHE}, allEntries = true)
     public Boolean isEnable(DeptDto deptDto) {
 
         //1.启用部门
@@ -204,7 +216,12 @@ public class DeptServiceImpl implements DeptService {
      * @return: deptDto
      */
     @Override
+    @Cacheable(value = CacheConstant.DEPT_TREE_CACHE,
+               key = "'dept_tree_' + (#dto?.dataState != null ? #dto.dataState : 'all')",
+               unless = "#result == null")
     public TreeVo deptTreeVo(DeptDto dto) {
+        System.out.println("=== CACHE MISS: deptTreeVo called with dto=" + dto);
+
         //根节点查询树形结构
         String parentDeptNo = SuperConstant.ROOT_DEPT_PARENT_ID;
         //指定节点查询树形结构
@@ -276,6 +293,7 @@ public class DeptServiceImpl implements DeptService {
      * @return 部门树
      */
     @Override
+    @Cacheable(value = CacheConstant.DEPT_TREE_CACHE, key = "'all_dept_tree'", unless = "#result == null or #result.size() == 0")
     public List<DeptVo> selectDeptTree() {
         DeptDto deptDto = new DeptDto();
         deptDto.setDataState("0");
