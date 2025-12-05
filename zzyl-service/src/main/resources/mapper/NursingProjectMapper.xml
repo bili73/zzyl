@@ -63,17 +63,19 @@
 
     <!-- 更新护理项目 -->
     <update id="update">
-        UPDATE nursing_project SET
-            name = #{name},
-            order_no = #{orderNo},
-            unit = #{unit},
-            price = #{price},
-            image = #{image},
-            nursing_requirement = #{nursingRequirement},
-            status = #{status},
-            update_by = #{updateBy},
-            remark = #{remark},
-            update_time = #{updateTime}
+        UPDATE nursing_project
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="nursingRequirement != null">nursing_requirement = #{nursingRequirement},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
         WHERE id = #{id}
     </update>
 

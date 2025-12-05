@@ -1,0 +1,362 @@
+package com.zzyl.service.impl;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.zzyl.base.PageResponse;
+import com.zzyl.dto.UserDto;
+import com.zzyl.entity.Dept;
+import com.zzyl.entity.Post;
+import com.zzyl.entity.Role;
+import com.zzyl.entity.User;
+import com.zzyl.mapper.DeptMapper;
+import com.zzyl.mapper.PostMapper;
+import com.zzyl.mapper.RoleMapper;
+import com.zzyl.entity.UserRole;
+import com.zzyl.mapper.UserMapper;
+import com.zzyl.mapper.UserRoleMapper;
+import com.zzyl.service.UserService;
+import com.zzyl.utils.PasswordUtil;
+import com.zzyl.vo.UserVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * 用户服务实现类
+ */
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+n    @Autowired
+    private DeptMapper deptMapper;
+
+    @Autowired
+    private PostMapper postMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
+    private UserMapper userMapper;
+
+    @Autowired
+n    @Autowired
+    private DeptMapper deptMapper;
+
+    @Autowired
+    private PostMapper postMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
+    private UserRoleMapper userRoleMapper;
+
+    @Override
+    public Page<User> selectUserByPage(User user, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> users = userMapper.selectAll(user);
+        return (Page<User>) users;
+    }
+
+    @Override
+    public User selectUserById(Long id) {
+        return userMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    @Transactional
+    public Boolean insertUser(User user) {
+        // 设置默认密码
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(PasswordUtil.encodePassword("123456"));
+        } else {
+            user.setPassword(PasswordUtil.encodePassword(user.getPassword()));
+        }
+        return userMapper.insertSelective(user) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateUser(User user) {
+        // 更新用户信息
+        return userMapper.updateByPrimaryKeySelective(user) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteUserById(Long id) {
+        // 删除用户角色关联
+        userRoleMapper.deleteByUserId(id);
+        // 删除用户
+        return userMapper.deleteByPrimaryKey(id) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteUserByIds(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return false;
+        }
+        // 批量删除用户角色关联
+        userRoleMapper.deleteByUserIds(ids);
+        // 批量删除用户
+        return userMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public User selectUserByUsername(String username) {
+        return userMapper.selectByUsername(username);
+    }
+
+    @Override
+    public User selectUserByOpenId(String openId) {
+        return userMapper.selectByOpenId(openId);
+    }
+
+    @Override
+    @Transactional
+    public Boolean updatePassword(Long id, String newPassword) {
+        User user = new User();
+        user.setId(id);
+        user.setPassword(PasswordUtil.encodePassword(newPassword));
+        return userMapper.updateByPrimaryKeySelective(user) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateDataState(Long id, String dataState) {
+        User user = new User();
+        user.setId(id);
+        user.setDataState(dataState);
+        return userMapper.updateByPrimaryKeySelective(user) > 0;
+    }
+
+    // ==================== 扩展业务方法 ====================
+
+    /**
+     * 分页查询用户（包含角色信息）
+     */
+    public PageResponse<UserVo> findUserVoPage(UserDto userDto, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+
+        User user = new User();
+        BeanUtils.copyProperties(userDto, user);
+
+        List<User> userList = userMapper.selectAll(user);
+        Page<User> userPage = (Page<User>) userList;
+
+        // 转换为VO并填充角色信息
+        List<UserVo> userVoList = userPage.stream().map(u -> {
+            UserVo userVo = new UserVo();
+            BeanUtils.copyProperties(u, userVo);
+
+            // 获取用户角色信息
+            List<UserRole> userRoles = userRoleMapper.selectByUserId(u.getId());
+            if (!CollectionUtils.isEmpty(userRoles)) {
+                Set<String> roleIds = userRoles.stream()
+                    .map(ur -> ur.getRoleId().toString())
+                    .collect(Collectors.toSet());
+                userVo.setRoleVoIds(roleIds);
+            }
+
+            return userVo;
+        }).collect(Collectors.toList());
+
+        // 手动构建PageResponse
+        PageResponse<UserVo> pageResponse = new PageResponse<>();
+        pageResponse.setPage(userPage.getPageNum());
+        pageResponse.setPageSize(userPage.getPageSize());
+        pageResponse.setTotal(userPage.getTotal());
+        pageResponse.setPages((long) userPage.getPages());
+        pageResponse.setRecords(userVoList);
+
+        return pageResponse;
+    }
+
+    /**
+     * 创建用户（包含角色关联）
+     */
+    @Transactional
+    public UserVo createUser(UserDto userDto) {
+        // 检查用户名是否已存在
+        if (userDto.getUsername() != null) {
+            User existingUser = userMapper.selectByUsername(userDto.getUsername());
+            if (existingUser != null) {
+                throw new RuntimeException("用户名已存在: " + userDto.getUsername());
+            }
+        }
+        // 检查真实姓名是否已存在
+        if (userDto.getRealName() != null && !userDto.getRealName().trim().isEmpty()) {
+            User existingUserByRealName = userMapper.selectByRealName(userDto.getRealName().trim());
+            if (existingUserByRealName != null) {
+                throw new RuntimeException("真实姓名已存在: " + userDto.getRealName().trim());
+            }
+        }
+
+        User user = new User();
+        BeanUtils.copyProperties(userDto, user);
+
+        // 设置默认值
+        if (user.getDataState() == null) {
+            user.setDataState("0"); // 0启用
+        }
+        if (user.getUserType() == null) {
+            user.setUserType("0"); // 0系统用户
+        }
+        if (user.getSex() == null) {
+            user.setSex("0"); // 0男
+        }
+        // 设置username - 如果没有username，使用realName生成一个
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            if (userDto.getRealName() != null && !userDto.getRealName().trim().isEmpty()) {
+                // 使用真实姓名的拼音作为用户名，这里简化处理，直接使用真实姓名
+                user.setUsername(userDto.getRealName().trim());
+            } else {
+                user.setUsername("user_" + System.currentTimeMillis());
+            }
+        }
+
+        // 设置nickName - 如果没有昵称，使用真实姓名
+        if (user.getNickName() == null || user.getNickName().trim().isEmpty()) {
+            if (userDto.getRealName() != null && !userDto.getRealName().trim().isEmpty()) {
+                user.setNickName(userDto.getRealName().trim());
+            } else {
+                user.setNickName("用户");
+            }
+        }
+
+        // 设置isDelete默认值
+        if (user.getIsDelete() == null) {
+            user.setIsDelete(0); // 0未删除
+        }
+
+        // 设置isLeader默认值
+        if (user.getIsLeader() == null) {
+            user.setIsLeader(0); // 0不是leader
+        }
+
+        // 设置默认密码
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(PasswordUtil.encodePassword("123456"));
+        } else {
+            user.setPassword(PasswordUtil.encodePassword(user.getPassword()));
+        }
+
+        userMapper.insertSelective(user);
+
+        // 保存用户角色关联
+        if (!CollectionUtils.isEmpty(userDto.getRoleVoIds())) {
+            saveUserRoles(user.getId(), userDto.getRoleVoIds());
+        }
+
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(user, userVo);
+        userVo.setRoleVoIds(userDto.getRoleVoIds());
+
+        return userVo;
+    }
+
+    /**
+     * 更新用户（包含角色关联）
+     */
+    @Transactional
+    public Boolean updateUser(UserDto userDto) {
+        User user = new User();
+        BeanUtils.copyProperties(userDto, user);
+
+        // 更新用户基本信息
+        boolean result = userMapper.updateByPrimaryKeySelective(user) > 0;
+
+        // 更新用户角色关联
+        if (!CollectionUtils.isEmpty(userDto.getRoleVoIds())) {
+            // 先删除原有角色关联
+            userRoleMapper.deleteByUserId(userDto.getId());
+            // 保存新的角色关联
+            saveUserRoles(userDto.getId(), userDto.getRoleVoIds());
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取当前用户信息
+     */
+    public UserVo getCurrentUser() {
+        // 从ThreadLocal获取当前用户ID
+        Long currentUserId = com.zzyl.utils.UserThreadLocal.get();
+        if (currentUserId == null) {
+            throw new RuntimeException("未登录");
+        }
+
+        User user = userMapper.selectByPrimaryKey(currentUserId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(user, userVo);
+
+        // 获取用户角色信息
+        List<UserRole> userRoles = userRoleMapper.selectByUserId(currentUserId);
+        if (!CollectionUtils.isEmpty(userRoles)) {
+            Set<String> roleIds = userRoles.stream()
+                .map(ur -> ur.getRoleId().toString())
+                .collect(Collectors.toSet());
+            userVo.setRoleVoIds(roleIds);
+        }
+
+        return userVo;
+    }
+
+    /**
+     * 启用或禁用用户
+     */
+    @Transactional
+    public Boolean isEnable(Long id, String status) {
+        User user = new User();
+        user.setId(id);
+        user.setDataState(status);
+        return userMapper.updateByPrimaryKeySelective(user) > 0;
+    }
+
+    /**
+     * 删除用户
+     */
+    @Transactional
+    public Boolean removeUser(Long userId) {
+        // 删除用户角色关联
+        userRoleMapper.deleteByUserId(userId);
+        // 删除用户
+        return userMapper.deleteByPrimaryKey(userId) > 0;
+    }
+
+    /**
+     * 重置密码
+     */
+    @Transactional
+    public Boolean resetPassword(Long userId) {
+        User user = new User();
+        user.setId(userId);
+        user.setPassword(PasswordUtil.encodePassword("123456"));
+        return userMapper.updateByPrimaryKeySelective(user) > 0;
+    }
+
+    /**
+     * 保存用户角色关联
+     */
+    private void saveUserRoles(Long userId, Set<String> roleIds) {
+        if (!CollectionUtils.isEmpty(roleIds)) {
+            for (String roleId : roleIds) {
+                UserRole userRole = new UserRole();
+                userRole.setUserId(userId);
+                userRole.setRoleId(Long.parseLong(roleId));
+                userRole.setDataState("0");
+                userRoleMapper.insertSelective(userRole);
+            }
+        }
+    }
+}

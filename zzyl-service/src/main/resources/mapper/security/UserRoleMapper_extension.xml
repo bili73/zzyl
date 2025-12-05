@@ -1,0 +1,24 @@
+<!-- 自定义查询方法 -->
+  <select id="selectByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user_role
+    where user_id = #{userId,jdbcType=BIGINT}
+    AND data_state = '0'
+    ORDER BY create_time DESC
+  </select>
+
+  <delete id="deleteByUserId" parameterType="java.lang.Long">
+    delete from sys_user_role
+    where user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByUserIds" parameterType="java.util.List">
+    delete from sys_user_role
+    where user_id in
+    <foreach collection="list" item="userId" open="(" close=")" separator=",">
+      #{userId,jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
+</mapper>

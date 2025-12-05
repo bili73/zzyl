@@ -18,23 +18,58 @@ import java.util.Map;
 @RestController
 public class LoginController {
 
+    // 移除了重复的 /security/login 映射，由SecurityController处理
+    // 保留原有的 /login/auth 接口作为备用
 
-    @PostMapping("/security/login")
-    public ResponseResult login(@RequestBody LoginDto loginDto){
+    @PostMapping("/login/auth")
+    public ResponseResult<String> loginAuth(@RequestBody LoginDto loginDto){
+        return processLogin(loginDto);
+    }
 
-        UserVo userVo = new UserVo();
+    // 供SecurityController调用的登录处理方法
+    public ResponseResult<String> login(@RequestBody LoginDto loginDto){
+        return processLogin(loginDto);
+    }
 
+    // 提取公共的登录逻辑
+    private ResponseResult<String> processLogin(@RequestBody LoginDto loginDto){
         Map<String,Object> map = new HashMap<>();
         map.put("username",loginDto.getUsername());
 
-        userVo.setUserToken(JwtUtil.createJWT("itheima",600000,map));
-        return ResponseResult.success(userVo);
+        String token = JwtUtil.createJWT("itheima",600000,map);
+
+        // 前端期望的是直接返回token字符串，而不是整个UserVo对象
+        return ResponseResult.success(token);
     }
 
     @GetMapping("/resource/menus")
     public String menus(){
         return menu;
 
+    }
+
+    @GetMapping("/getInfo")
+    public ResponseResult<Map<String, Object>> getInfo(){
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("id", "1");
+        userInfo.put("name", "测试用户");
+        userInfo.put("icon", "https://avatars.githubusercontent.com/u/1?v=4");
+        userInfo.put("roleName", "管理员");
+        userInfo.put("type", 1);
+        userInfo.put("requestId", "req_123456");
+
+        return ResponseResult.success(userInfo);
+    }
+
+    @GetMapping("/resource/myButten/")
+    public ResponseResult<List<String>> getButtons(){
+        // 返回权限按钮列表，可以为空
+        List<String> buttons = new ArrayList<>();
+        buttons.add("add");
+        buttons.add("edit");
+        buttons.add("delete");
+
+        return ResponseResult.success(buttons);
     }
 
     static String menu = "{\n" +
