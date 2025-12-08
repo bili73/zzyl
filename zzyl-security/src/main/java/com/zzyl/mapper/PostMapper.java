@@ -13,12 +13,14 @@ import java.util.List;
 @Mapper
 public interface PostMapper {
 
+    int deleteByPrimaryKey(Long id);
 
     int insert(Post record);
 
     int insertSelective(Post record);
 
-    @Select("select * from sys_post where id = #{id}")
+    Post selectByPrimaryKey(Long id);
+
     Post selectById(Long id);
 
     Post selectByPostNo(@Param("postNo")String postNo);
@@ -32,6 +34,14 @@ public interface PostMapper {
     List<Post> selectList(@Param("postDto")PostDto postDto);
 
     List<PostVo> findPostVoListByUserId(@Param("userId") Long userId);
+
+    /**
+     * 根据部门编号查询最大的岗位编号
+     * @param deptNo 部门编号
+     * @return 最大岗位编号
+     */
+    @Select("SELECT MAX(post_no) FROM sys_post WHERE dept_no = #{deptNo}")
+    String selectMaxPostNoByDeptNo(@Param("deptNo") String deptNo);
 
     /**
      * 批量删除岗位信息

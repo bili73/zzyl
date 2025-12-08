@@ -66,4 +66,19 @@ public interface UserService {
      * @return 操作结果
      */
     UserVo resetPassword(UserDto userDto);
+
+    // 添加Controller需要的缺失方法
+    PageResponse<UserVo> findUserVoPage(UserDto userDto, int pageNum, int pageSize);
+
+    UserVo createUser(UserDto userDto);
+
+    Boolean updateUser(UserDto userDto);
+
+    UserVo getCurrentUser();
+
+    Boolean isEnable(Long id, String status);
+
+    Boolean removeUser(Long userId);
+
+    Boolean resetPassword(Long userId);
 }

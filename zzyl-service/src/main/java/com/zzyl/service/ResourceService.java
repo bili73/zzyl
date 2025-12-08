@@ -1,6 +1,8 @@
 package com.zzyl.service;
 
 import com.zzyl.dto.ResourceDto;
+import com.zzyl.entity.Resource;
+import com.zzyl.mapper.ResourceMapper;
 import com.zzyl.vo.ResourceVo;
 import com.zzyl.vo.TreeVo;
 
@@ -31,4 +33,28 @@ public interface ResourceService {
      * @return 按钮权限列表
      */
     List<String> getUserButtons(Long userId);
+
+    /**
+     * 创建资源
+     * @param resourceDto 资源DTO
+     */
+    void createResource(ResourceDto resourceDto);
+
+    /**
+     * 启用/禁用资源
+     * @param resourceDto 资源DTO
+     */
+    void enableDisableResource(ResourceDto resourceDto);
+
+    /**
+     * 根据资源编号删除资源
+     * @param resourceNo 资源编号
+     */
+    void deleteResourceByResourceNo(String resourceNo);
+
+    /**
+     * 获取ResourceMapper
+     * @return ResourceMapper
+     */
+    ResourceMapper getResourceMapper();
 }

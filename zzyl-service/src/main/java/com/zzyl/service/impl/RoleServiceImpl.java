@@ -32,8 +32,16 @@ public class RoleServiceImpl implements RoleService {
     private RoleResourceMapper roleResourceMapper;
 
     @Override
-    @Cacheable(value = CacheConstant.ROLE_LIST_CACHE, key = "#roleDto.roleName != null ? #roleDto.roleName.hashCode() : 'all' + '_' + #pageNum + '_' + #pageSize", unless = "#result == null")
+    // @Cacheable(value = CacheConstant.ROLE_LIST_CACHE, key = "#roleDto.roleName != null ? #roleDto.roleName.hashCode() : 'all' + '_' + #pageNum + '_' + #pageSize", unless = "#result == null")
     public PageResponse<RoleVo> findRoleVoPage(RoleDto roleDto, Integer pageNum, Integer pageSize) {
+        // 确保分页参数正确
+        if (pageNum == null || pageNum < 1) {
+            pageNum = 1;
+        }
+        if (pageSize == null || pageSize < 1) {
+            pageSize = 10;
+        }
+
         // 使用PageHelper进行分页
         PageHelper.startPage(pageNum, pageSize);
 
@@ -41,9 +49,32 @@ public class RoleServiceImpl implements RoleService {
         String roleName = roleDto.getRoleName();
         List<Role> roles = roleMapper.selectByCondition(roleName, null);
 
-        // 使用PageResponse.of方法转换
+        // 立即获取Page对象，这是关键！
         Page<Role> page = (Page<Role>) roles;
-        return PageResponse.of(page, RoleVo.class);
+
+        // 转换为RoleVo并获取权限信息
+        List<RoleVo> roleVos = roles.stream().map(role -> {
+            RoleVo roleVo = new RoleVo();
+            BeanUtils.copyProperties(role, roleVo);
+
+            // 查询该角色的权限
+            Set<String> checkedResources = findCheckedResources(role.getId());
+            if (checkedResources != null && !checkedResources.isEmpty()) {
+                roleVo.setCheckedResourceNos(checkedResources.toArray(new String[0]));
+            }
+
+            return roleVo;
+        }).collect(Collectors.toList());
+
+        // 手动构建PageResponse
+        PageResponse<RoleVo> pageResponse = new PageResponse<>();
+        pageResponse.setPage(page.getPageNum());
+        pageResponse.setPageSize(page.getPageSize());
+        pageResponse.setTotal(page.getTotal());
+        pageResponse.setPages((long) page.getPages());
+        pageResponse.setRecords(roleVos);
+
+        return pageResponse;
     }
 
     @Override
