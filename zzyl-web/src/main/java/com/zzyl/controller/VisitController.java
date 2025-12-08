@@ -61,7 +61,7 @@ public class VisitController extends BaseController {
 
     @GetMapping
     @ApiOperation("查询所有来访")
-    public ResponseResult<List<VisitVo>> findAll(@RequestParam(required = false) String mobile, @RequestParam(required = false) Long time) {
+    public ResponseResult<List<VisitVo>> findAll(@RequestParam(value = "mobile", required = false) String mobile, @RequestParam(value = "time", required = false) Long time) {
         List<VisitVo> visitVoList = visitService.findAll(mobile, LocalDateTimeUtil.of(time));
         return success(visitVoList);
     }
@@ -81,15 +81,17 @@ public class VisitController extends BaseController {
             @ApiImplicitParam(name = "startTime", value = "开始时间", required = false, dataType = "long", paramType = "query"),
             @ApiImplicitParam(name = "endTime", value = "结束时间", required = false, dataType = "long", paramType = "query")
     })
-    public ResponseResult<PageResponse<VisitVo>> findByPage(@RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "10") int pageSize,
-                                                            @RequestParam(required = false) String name,
-                                                            @RequestParam(required = false) String phone,
-                                                            @RequestParam(required = false) Integer status,
-                                                            @RequestParam(required = false) Integer type,
-                                                            @RequestParam(required = false) Long startTime,
-                                                            @RequestParam(required = false) Long endTime) {
+    public ResponseResult<PageResponse<VisitVo>> findByPage(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "status", required = false) Integer status,
+            @RequestParam(value = "type", required = false) Integer type,
+            @RequestParam(value = "startTime", required = false) Long startTime,
+            @RequestParam(value = "endTime", required = false) Long endTime) {
         PageResponse<VisitVo> byPage = visitService.findByPage(pageNum, pageSize, name, phone, status, type, ObjectUtil.isEmpty(startTime)? null : LocalDateTimeUtil.of(startTime), ObjectUtil.isEmpty(endTime)? null : LocalDateTimeUtil.of(endTime));
         return success(byPage);
     }
 
-}
+  }

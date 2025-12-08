@@ -8,7 +8,7 @@
         <result column="description" property="description"/>
         <result column="fee" property="fee"/>
         <result column="status" property="status"/>
-        <result column="sortNo" property="sortNo"/>
+        <result column="lplan_id" property="planId"/>
         <result column="create_by" property="createBy"/>
         <result column="update_by" property="updateBy"/>
         <result column="remark" property="remark"/>
@@ -46,9 +46,9 @@
 
     <!-- 新增护理等级 -->
     <insert id="insert">
-        insert into nursing_level (name, description, fee, status, sortNo, create_by,
+        insert into nursing_level (name, description, fee, status, lplan_id, create_by,
                                    update_by, remark, create_time, update_time)
-        values (#{name}, #{description}, #{fee}, #{status}, #{sortNo}, #{createBy},
+        values (#{name}, #{description}, #{fee}, #{status}, #{planId}, #{createBy},
                 #{updateBy}, #{remark}, #{createTime}, #{updateTime})
     </insert>
 
@@ -61,14 +61,16 @@
 
     <update id="update">
         update nursing_level
-        set name        = #{name},
-            description = #{description},
-            fee        = #{fee},
-            status      = #{status},
-            sortNo     = #{sortNo},
-            update_by   = #{updateBy},
-            remark      = #{remark},
-            update_time = #{updateTime}
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="fee != null">fee = #{fee},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="planId != null">lplan_id = #{planId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
         where id = #{id}
     </update>
 

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzyl.mapper.ReservationMapper">
+    <resultMap id="ReservationMap" type="com.zzyl.entity.Reservation">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="mobile" property="mobile"/>
+        <result column="time" property="time"/>
+        <result column="visitor" property="visitor"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.zzyl.entity.Reservation" useGeneratedKeys="true" keyProperty="id">
+        insert into reservation(name, mobile, time, visitor, type, status, create_by, remark, create_time)
+        values (#{name}, #{mobile}, #{time}, #{visitor,jdbcType=VARCHAR}, #{type}, #{status}, #{createBy}, #{remark}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.zzyl.entity.Reservation">
+        update reservation
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="mobile != null">mobile = #{mobile},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="visitor != null">visitor = #{visitor,jdbcType=VARCHAR},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from reservation where id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="ReservationMap">
+        select * from reservation where id = #{id}
+    </select>
+
+    <!-- 管理端分页查询所有预约 -->
+    <select id="pageAll" resultMap="ReservationMap">
+        select * from reservation
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and mobile = #{phone}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="startTime != null and endTime != null">
+                and time between #{startTime} and #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                and time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                and time &lt;= #{endTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 根据手机号和时间查找预约 -->
+    <select id="findByMobileAndTime" resultMap="ReservationMap">
+        select * from reservation where mobile = #{mobile} and time = #{time}
+    </select>
+
+    <!-- 根据用户ID和状态查找预约 -->
+    <select id="findByUserIdAndStatus" resultMap="ReservationMap">
+        select * from reservation where create_by = #{userId} and status = #{status} order by create_time desc
+    </select>
+
+    <!-- 根据用户ID查找预约 -->
+    <select id="findByUserId" resultMap="ReservationMap">
+        select * from reservation where create_by = #{userId} order by create_time desc
+    </select>
+
+    <!-- 分页根据用户ID和状态查找预约 -->
+    <select id="pageByUserIdAndStatus" resultMap="ReservationMap">
+        select * from reservation where create_by = #{userId} and status = #{status} order by create_time desc
+    </select>
+
+    <!-- 分页根据用户ID查找预约 -->
+    <select id="pageByUserId" resultMap="ReservationMap">
+        select * from reservation where create_by = #{userId} order by create_time desc
+    </select>
+
+    <!-- 根据用户ID和状态统计预约数量 -->
+    <select id="countByUserIdAndStatus" resultType="java.lang.Integer">
+        select count(*) from reservation where create_by = #{userId} and status = #{status}
+    </select>
+
+    <!-- 根据用户ID统计预约数量 -->
+    <select id="countByUserId" resultType="java.lang.Integer">
+        select count(*) from reservation where create_by = #{userId}
+    </select>
+
+    <!-- 过期超时的预约 -->
+    <update id="expireOverdueReservations">
+        update reservation set status = 3, update_time = #{currentTime}
+        where status = 0 and time &lt; #{currentTime}
+    </update>
+
+</mapper>
