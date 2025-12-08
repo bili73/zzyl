@@ -1,4 +1,5 @@
-# Maven编译产物
+# 智慧养老管理系统 - 后端 Git 忽略文件
+# Java 编译产物
 target/
 *.class
 *.jar
@@ -6,7 +7,12 @@ target/
 *.ear
 *.iml
 
-# IDE文件
+# Maven 编译产物
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+.mvn/timing.properties.lock
+
+# IDE 相关文件
 .idea/
 *.ipr
 *.iws
@@ -14,11 +20,15 @@ target/
 .settings/
 .project
 .classpath
+.factorypath
+.springBeans
+.sts4-cache/
 
 # 日志文件
 logs/
 *.log
 *.log.*
+LOG_PATH_IS_UNDEFINED/
 
 # 临时文件
 *.tmp
@@ -26,22 +36,69 @@ logs/
 *.bak
 *.swp
 *~
+.nojekyll
 
 # 系统文件
 .DS_Store
 Thumbs.db
 desktop.ini
+$RECYCLE.BIN/
 
-# 依赖目录
-node_modules/
-
-# 配置文件（包含敏感信息）
-*.properties
-*.yml
-!application.yml
-!application.properties
-
-# 其他
+# 缓存文件
 .cache/
-dist/
-build/
+.cache-loader/
+.npm/
+.eslintcache
+.stylelintcache
+
+# 测试覆盖率报告
+coverage/
+*.lcov
+
+# 运行时文件
+*.pid
+*.seed
+*.pid.lock
+
+# 可选的 npm 缓存目录
+.npm
+
+# 可选的 eslint 缓存
+.eslintcache
+
+# 微服务相关
+.nacos/
+.nacos-data/
+.nacos-logs/
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 备份文件
+*.backup
+*.bak
+
+# 环境配置文件（包含敏感信息）
+# 保留示例文件，忽略实际配置
+application-prod.yml
+application-dev.yml
+application-test.yml
+!application.yml.example
+!application-dev.yml.example
+!application-test.yml.example
+!application-prod.yml.example
+
+# 敏感信息文件
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+keystore/
+certs/
+
+# 个人配置
+mybatis-generator.properties
+custom.properties
