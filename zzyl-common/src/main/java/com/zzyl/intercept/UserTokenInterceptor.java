@@ -63,6 +63,7 @@ public class UserTokenInterceptor implements HandlerInterceptor {
 
         //获取token
         String token = request.getHeader(Constants.USER_TOKEN);
+
         //token是否为空
         if(StringUtils.isEmpty(token)){
             throw new BaseException(BasicEnum.LOGIN_LOSE_EFFICACY);
@@ -91,12 +92,6 @@ public class UserTokenInterceptor implements HandlerInterceptor {
             urlList = JSONUtil.toList(urlJson, String.class);
         }
 
-        //如果Redis中没有权限缓存，作为临时解决方案直接放行
-        //这样可以避免因Redis缓存问题导致的权限验证失败
-        if(CollectionUtils.isEmpty(urlList)){
-            return true; // 临时解决：直接放行，后续修复Redis缓存问题
-        }
-
         //匹配当前路径是否在urllist集合中
         if (!CollectionUtils.isEmpty(urlList)) {
             for (String url : urlList) {
@@ -107,11 +102,8 @@ public class UserTokenInterceptor implements HandlerInterceptor {
             }
         }
 
-        // 如果路径不在权限列表中，为了临时解决问题，直接放行
-        // 这样可以避免权限缓存不完整导致的访问失败
-        return true; // 临时解决：直接放行所有通过认证的请求
-
-        // throw new BaseException(BasicEnum.SECURITY_ACCESSDENIED_FAIL);
+        // 如果路径不在权限列表中，抛出权限异常
+        throw new BaseException(BasicEnum.SECURITY_ACCESSDENIED_FAIL);
 
     }
 

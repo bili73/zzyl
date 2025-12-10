@@ -62,7 +62,6 @@ public class UserServiceImpl implements UserService {
                key = "'user_list_' + (#userDto?.username != null ? #userDto.username : '') + '_' + (#userDto?.dataState != null ? #userDto.dataState : '') + '_' + (#userDto?.realName != null ? #userDto.realName : '') + '_' + (#userDto?.mobile != null ? #userDto.mobile : '') + '_' + (#userDto?.email != null ? #userDto.email : '') + '_' + (#userDto?.sex != null ? #userDto.sex : '') + '_' + (#userDto?.deptNo != null ? #userDto.deptNo : '') + '_' + (#userDto?.postNo != null ? #userDto.postNo : '') + '_' + #pageNum + '_' + #pageSize",
                unless = "#result == null or #result.total == 0")
     public PageResponse<UserVo> pageQuery(UserDto userDto, Integer pageNum, Integer pageSize) {
-        System.out.println("=== CACHE MISS: pageQuery called with userDto=" + userDto + ", pageNum=" + pageNum + ", pageSize=" + pageSize);
 
         PageHelper.startPage(pageNum, pageSize);
 
@@ -177,9 +176,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public UserVo add(UserDto userDto) {
-        System.out.println("=== CACHE EVICT: add called, clearing all user caches");
 
         // 检查用户名是否已存在
         if (userDto.getUsername() != null) {
@@ -220,6 +218,7 @@ public class UserServiceImpl implements UserService {
             } else {
                 user.setUsername("user_" + System.currentTimeMillis());
             }
+        } else {
         }
 
         // 设置nickName - 如果没有昵称，使用真实姓名
@@ -264,9 +263,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public UserVo update(UserDto userDto) {
-        System.out.println("=== CACHE EVICT: update called for userId=" + userDto.getId() + ", clearing all user caches");
 
         User user = new User();
         BeanUtils.copyProperties(userDto, user);
@@ -289,7 +287,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public int delete(Long[] ids) {
         if (ids == null || ids.length == 0) {
             return 0;
@@ -309,9 +307,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public UserVo updateStatus(UserDto userDto) {
-        System.out.println("=== CACHE EVICT: updateStatus called for userId=" + userDto.getId() + ", clearing all user caches");
 
         User user = new User();
         user.setId(userDto.getId());
@@ -329,9 +326,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public UserVo resetPassword(UserDto userDto) {
-        System.out.println("=== CACHE EVICT: resetPassword called for userId=" + userDto.getId() + ", clearing all user caches");
 
         User user = new User();
         user.setId(userDto.getId());
@@ -370,14 +366,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public UserVo createUser(UserDto userDto) {
         return add(userDto);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public Boolean updateUser(UserDto userDto) {
         UserVo result = update(userDto);
         return result != null;
@@ -391,7 +387,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public Boolean isEnable(Long id, String status) {
         UserDto userDto = new UserDto();
         userDto.setId(id);
@@ -402,7 +398,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public Boolean removeUser(Long userId) {
         Long[] ids = {userId};
         int result = delete(ids);
@@ -411,7 +407,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {CacheConstant.USER_CACHE, CacheConstant.USER_LIST_CACHE, CacheConstant.USER_ROLE_CACHE}, allEntries = true)
+    @CacheEvict(value = {CacheConstant.USER_LIST_CACHE}, allEntries = true)
     public Boolean resetPassword(Long userId) {
         UserDto userDto = new UserDto();
         userDto.setId(userId);
