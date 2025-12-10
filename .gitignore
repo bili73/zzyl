@@ -102,3 +102,12 @@ certs/
 # 个人配置
 mybatis-generator.properties
 custom.properties
+# 额外的敏感配置文件保护
+# 包含真实密钥的配置文件
+**/application-real.yml
+**/application-local.yml
+**/config/application-real.yml
+
+# 避免意外提交包含敏感信息的配置文件
+**/*application*.yml.backup
+**/*config*.yml.bak
