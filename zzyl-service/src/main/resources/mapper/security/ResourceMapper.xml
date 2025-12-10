@@ -247,4 +247,43 @@
   <delete id="deleteRoleResourceByResourceNo" parameterType="java.lang.String">
     DELETE FROM sys_role_resource WHERE resource_no = #{resourceNo,jdbcType=VARCHAR}
   </delete>
+
+  <!-- 根据用户ID查询资源列表 -->
+  <select id="selectListByUserId" resultType="com.zzyl.entity.Resource">
+    select sr.request_path requestPath
+    from sys_user_role sur,
+         sys_role_resource srr,
+         sys_resource sr
+    where sur.role_id = srr.role_id
+      and srr.resource_no = sr.resource_no
+      and sr.data_state = '0'
+      and sr.resource_type = 'r'
+      and sur.user_id = #{userId}
+  </select>
+
+  <!-- 根据用户ID查询菜单数据 -->
+  <resultMap id="BaseResultVoMap" type="com.zzyl.vo.MenuVo">
+    <result column="resource_no" jdbcType="VARCHAR" property="resourceNo"/>
+    <result column="parent_resource_no" jdbcType="VARCHAR" property="parentResourceNo"/>
+    <result column="resource_name" jdbcType="VARCHAR" property="name"/>
+    <result column="request_path" jdbcType="VARCHAR" property="path"/>
+  </resultMap>
+
+  <select id="findListByUserId" resultMap="BaseResultVoMap">
+   SELECT
+    sr.resource_no,
+    sr.parent_resource_no,
+    sr.resource_name ,
+    sr.request_path
+  FROM
+    sys_resource sr,
+    sys_role_resource srr,
+    sys_user_role sur
+  WHERE
+    sr.resource_no = srr.resource_no
+    AND srr.role_id =sur.role_id
+    AND sr.data_state = '0'
+    AND sr.resource_type = 'm'
+    AND sur.user_id  = #{userId}
+  </select>
 </mapper>

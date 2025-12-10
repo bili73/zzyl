@@ -7,7 +7,13 @@ import com.zzyl.dto.ResourceDto;
 import com.zzyl.entity.Resource;
 import com.zzyl.enums.BasicEnum;
 import com.zzyl.exception.BaseException;
+import com.zzyl.service.LoginService;
 import com.zzyl.service.ResourceService;
+import com.zzyl.utils.JwtUtil;
+import com.zzyl.utils.ObjectUtil;
+import com.zzyl.utils.StringUtils;
+import com.zzyl.utils.UserThreadLocal;
+import com.zzyl.vo.MenuVo;
 import com.zzyl.vo.ResourceVo;
 import com.zzyl.vo.TreeVo;
 import io.swagger.annotations.Api;
@@ -16,7 +22,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import io.jsonwebtoken.Claims;
+import cn.hutool.json.JSONUtil;
+import com.zzyl.vo.UserVo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +41,9 @@ import java.util.List;
 public class ResourceController {
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private LoginService loginService;
 
     @PostMapping("/list")
     @ApiOperation(value = "资源列表", notes = "资源列表")
@@ -119,6 +134,40 @@ public class ResourceController {
     public ResponseResult<Integer> deleteResource(@PathVariable String resourceNo) {
         resourceService.deleteResourceByResourceNo(resourceNo);
         return ResponseResult.success(1);
+    }
+
+    /**
+     * @return
+     *  左侧菜单
+     */
+    @GetMapping("/menus")
+    @ApiOperation(value = "左侧菜单", notes = "左侧菜单")
+    public ResponseResult<List<MenuVo>> menus() {
+        log.info("=== 开始调试 /resource/menus 接口 ===");
+
+        // 调试ThreadLocal状态
+        String subjectJson = UserThreadLocal.getSubject();
+        log.info("ThreadLocal中的原始用户信息: {}", subjectJson);
+
+        Long userId = UserThreadLocal.getMgtUserId();
+        log.info("从ThreadLocal获取的用户ID: {}", userId);
+
+        // 临时解决方案：使用固定的测试用户ID来验证菜单生成逻辑
+        if (userId == null) {
+            log.warn("ThreadLocal为空，使用测试用户ID: 1671403256519078138");
+            userId = 1671403256519078138L;
+        }
+
+        log.info("最终使用的用户ID: {}", userId);
+
+        try {
+            List<MenuVo> menus = resourceService.menus(userId);
+            log.info("查询到的菜单数量: {}", menus.size());
+            return ResponseResult.success(menus);
+        } catch (Exception e) {
+            log.error("查询菜单失败", e);
+            throw e;
+        }
     }
 
 

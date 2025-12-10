@@ -51,7 +51,10 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
         //先删除图片
         RoomType roomType = roomTypeMapper.findRoomTypeById(id);
-        fileStorageService.delete(roomType.getPhoto());
+        if (roomType != null && roomType.getPhoto() != null && !roomType.getPhoto().isEmpty()) {
+            // 删除OSS上的图片文件
+            fileStorageService.delete(roomType.getPhoto());
+        }
         //删除房间类型
         roomTypeMapper.removeRoomType(id);
     }

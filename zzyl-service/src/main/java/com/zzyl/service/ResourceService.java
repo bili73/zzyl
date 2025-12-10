@@ -3,6 +3,7 @@ package com.zzyl.service;
 import com.zzyl.dto.ResourceDto;
 import com.zzyl.entity.Resource;
 import com.zzyl.mapper.ResourceMapper;
+import com.zzyl.vo.MenuVo;
 import com.zzyl.vo.ResourceVo;
 import com.zzyl.vo.TreeVo;
 
@@ -51,6 +52,13 @@ public interface ResourceService {
      * @param resourceNo 资源编号
      */
     void deleteResourceByResourceNo(String resourceNo);
+
+    /**
+     * 根据用户id查询对应的资源数据
+     * @param userId
+     * @return
+     */
+    List<MenuVo> menus(Long userId);
 
     /**
      * 获取ResourceMapper

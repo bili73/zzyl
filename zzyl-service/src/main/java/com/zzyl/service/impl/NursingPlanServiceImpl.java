@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,13 +77,20 @@ public class NursingPlanServiceImpl implements NursingPlanService {
             List<NursingProjectVo> nursingProjects = projectIds.stream()
                     .map(projectId -> {
                         NursingProject project = nursingProjectMapper.selectById(projectId);
+                        if (project == null) {
+                            return null;
+                        }
                         return BeanUtil.toBean(project, NursingProjectVo.class);
                     })
+                    .filter(Objects::nonNull) // 过滤掉null值
                     .collect(Collectors.toList());
             nursingPlanVo.setNursingProjects(nursingProjects);
             // 设置 projectPlans 字段用于前端回显
             nursingPlanVo.setProjectPlans(nursingProjects.stream()
                     .map(project -> {
+                        if (project == null) {
+                            return null;
+                        }
                         NursingProjectPlanDto planProject = new NursingProjectPlanDto();
                         planProject.setProjectId(project.getId());
                         planProject.setProjectName(project.getName());
@@ -92,6 +100,7 @@ public class NursingPlanServiceImpl implements NursingPlanService {
                         planProject.setExecuteTime("08:00");
                         return planProject;
                     })
+                    .filter(Objects::nonNull) // 过滤掉null值
                     .collect(Collectors.toList()));
         }
 

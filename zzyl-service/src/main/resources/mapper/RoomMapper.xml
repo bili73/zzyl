@@ -60,11 +60,6 @@
             <result column="room_id" property="roomId"/>
             <result column="ename" property="name"/>
             <result column="eid" property="elderId"/>
-            <collection property="userVos" ofType="com.zzyl.vo.UserVo" column="eid"
-                        select="com.zzyl.mapper.NursingElderMapper.selectUserByElderId">
-                <result column="real_name" property="realName"/>
-                <result column="uid" property="id"/>
-            </collection>
         </collection>
     </resultMap>
 

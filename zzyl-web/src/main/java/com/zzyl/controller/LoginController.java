@@ -42,11 +42,6 @@ public class LoginController {
         return ResponseResult.success(token);
     }
 
-    @GetMapping("/resource/menus")
-    public String menus(){
-        return menu;
-
-    }
 
     @GetMapping("/getInfo")
     public ResponseResult<Map<String, Object>> getInfo(){

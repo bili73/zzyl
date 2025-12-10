@@ -1,7 +1,9 @@
 package com.zzyl.utils;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.zzyl.base.BaseVo;
+import com.zzyl.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -85,8 +87,14 @@ public class UserThreadLocal {
         if (ObjectUtil.isEmpty(subject)) {
             return null;
         }
-        BaseVo baseVo = JSONObject.parseObject(subject, BaseVo.class);
-        return baseVo.getId() ;
+        try {
+            // 使用 hutool 的 JSONUtil 解析，与登录服务保持一致
+            UserVo userVo = JSONUtil.toBean(subject, UserVo.class);
+            return userVo.getId();
+        } catch (Exception e) {
+            log.error("解析用户信息失败: {}", subject, e);
+            return null;
+        }
     }
 
 

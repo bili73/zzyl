@@ -34,11 +34,12 @@ spring:
     password:
     database: 1
     timeout: 2000ms
-    lettuce:
+    jedis:
       pool:
         max-active: 8
         max-idle: 8
         min-idle: 0
+    client-type: jedis
   # MyBatis配置
 mybatis:
   #mapper配置文件
@@ -72,8 +73,8 @@ zzyl:
       ttl: 3600000
     oss:
       endpoint: oss-cn-beijing.aliyuncs.com
-      accessKeyId: 
-      accessKeySecret: 
+      accessKeyId: LTAI5tS3PVWkF5mz89YNeEu7
+      accessKeySecret: fVDUmhEAzEMC1zJhgbcQ5xGdlQiUbY
       bucketName: java-zzyl-20251103
   wechat:
     appId: wx3eebdbe27d92431a

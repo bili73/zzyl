@@ -56,6 +56,7 @@ public class CommonController {
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = UUID.randomUUID().toString() + extension;
 
+        // 使用OSS上传文件
         String filePath = fileStorageService.store(fileName, file.getInputStream());
 
         return ResponseResult.success(filePath);

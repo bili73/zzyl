@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.zzyl.intercept.UserInterceptor;
+import com.zzyl.intercept.UserTokenInterceptor;
+import com.zzyl.properties.SecurityConfigProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * webMvc高级配置
@@ -32,6 +36,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
     private UserInterceptor userInterceptor;
+
+    @Autowired
+    private UserTokenInterceptor userTokenInterceptor;
+
+    @Autowired
+    private SecurityConfigProperties securityConfigProperties;
 
     /**
      * 资源路径 映射
@@ -85,9 +95,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 小程序端接口鉴权拦截器
-        registry.addInterceptor(userInterceptor)
-                .excludePathPatterns(EXCLUDE_PATH_PATTERNS)
-                .addPathPatterns("/customer/**");
+        //小程序的
+        registry.addInterceptor(userInterceptor).excludePathPatterns(EXCLUDE_PATH_PATTERNS).addPathPatterns("/customer/**");
+        //后台拦截
+        // 合并公共访问URL和忽略URL作为排除路径
+        List<String> allExcludeUrls = new ArrayList<>();
+        allExcludeUrls.addAll(securityConfigProperties.getPublicAccessUrls());
+        allExcludeUrls.addAll(securityConfigProperties.getIgnoreUrl());
+
+        // 添加固定的排除路径
+        allExcludeUrls.add("/swagger-ui.html");
+        allExcludeUrls.add("/webjars/**");
+        allExcludeUrls.add("/swagger-resources");
+        allExcludeUrls.add("/v2/api-docs");
+        allExcludeUrls.add("/customer/user/login");
+
+        String[] array = allExcludeUrls.toArray(new String[0]);
+        registry.addInterceptor(userTokenInterceptor).excludePathPatterns(array).addPathPatterns("/**");
     }
 }

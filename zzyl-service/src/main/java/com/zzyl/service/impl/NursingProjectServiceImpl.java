@@ -65,12 +65,23 @@ public class NursingProjectServiceImpl implements NursingProjectService {
     }
 
     /**
-     * 删除护理项目
+     * 删除护理项目（只能删除禁用状态的护理项目）
      * @param id
      */
     @Override
     public void delete(Long id) {
-        nursingProjectMapper.deleteById(id);
+        // 先查询护理项目状态
+        NursingProject nursingProject = nursingProjectMapper.selectById(id);
+        if (nursingProject == null) {
+            throw new RuntimeException("护理项目不存在");
+        }
+
+        // 检查状态：只能删除禁用状态（status=0）的护理项目
+        if (nursingProject.getStatus() != null && nursingProject.getStatus().equals(0)) {
+            nursingProjectMapper.deleteById(id);
+        } else {
+            throw new RuntimeException("只能删除禁用状态的护理项目，请先禁用该护理项目");
+        }
     }
 
     /**

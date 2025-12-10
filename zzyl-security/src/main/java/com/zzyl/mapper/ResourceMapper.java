@@ -2,6 +2,7 @@ package com.zzyl.mapper;
 
 import com.zzyl.dto.ResourceDto;
 import com.zzyl.entity.Resource;
+import com.zzyl.vo.MenuVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -42,4 +43,18 @@ public interface ResourceMapper {
      * @param resourceNo
      */
     void deleteRoleResourceByResourceNo(String resourceNo);
+
+    /**
+     * 根据用户ID查询资源列表
+     * @param userId 用户ID
+     * @return 资源列表
+     */
+    List<Resource> selectListByUserId(Long userId);
+
+    /**
+     * 根据用户ID查询菜单数据
+     * @param userId 用户ID
+     * @return 菜单列表
+     */
+    List<MenuVo> findListByUserId(Long userId);
 }
