@@ -209,10 +209,13 @@ public class UserServiceImpl implements UserService {
         if (user.getSex() == null) {
             user.setSex("0"); // 0男
         }
-        // 设置username - 如果没有username，使用realName生成一个
+        // 设置username - 优先使用email，如果没有email则使用realName生成一个
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            if (userDto.getRealName() != null && !userDto.getRealName().trim().isEmpty()) {
-                // 使用真实姓名的拼音作为用户名，这里简化处理，直接使用真实姓名
+            if (userDto.getEmail() != null && !userDto.getEmail().trim().isEmpty()) {
+                // 优先使用邮箱作为用户名
+                user.setUsername(userDto.getEmail().trim());
+            } else if (userDto.getRealName() != null && !userDto.getRealName().trim().isEmpty()) {
+                // 如果没有邮箱，使用真实姓名的拼音作为用户名，这里简化处理，直接使用真实姓名
                 user.setUsername(userDto.getRealName().trim());
             } else {
                 user.setUsername("user_" + System.currentTimeMillis());
