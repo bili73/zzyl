@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzyl.mapper.DeviceDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.zzyl.entity.DeviceData">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="device_name" property="deviceName" jdbcType="VARCHAR"/>
+        <result column="iot_id" property="iotId" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="product_key" property="productKey" jdbcType="VARCHAR"/>
+        <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+        <result column="function_id" property="functionId" jdbcType="VARCHAR"/>
+        <result column="access_location" property="accessLocation" jdbcType="VARCHAR"/>
+        <result column="location_type" property="locationType" jdbcType="INTEGER"/>
+        <result column="physical_location_type" property="physicalLocationType" jdbcType="INTEGER"/>
+        <result column="device_description" property="deviceDescription" jdbcType="VARCHAR"/>
+        <result column="data_value" property="dataValue" jdbcType="VARCHAR"/>
+        <result column="alarm_time" property="alarmTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, device_name, iot_id, nickname, product_key, product_name, function_id,
+        access_location, location_type, physical_location_type, device_description,
+        data_value, alarm_time, create_time, update_time, create_by, update_by, remark
+    </sql>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device_data
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByIotId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device_data
+        WHERE iot_id = #{iotId,jdbcType=VARCHAR}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device_data
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectByCondition" parameterType="com.zzyl.entity.DeviceData" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device_data
+        <where>
+            <if test="iotId != null and iotId != ''">
+                AND iot_id = #{iotId}
+            </if>
+            <if test="deviceName != null and deviceName != ''">
+                AND device_name LIKE CONCAT('%', #{deviceName}, '%')
+            </if>
+            <if test="functionId != null and functionId != ''">
+                AND function_id = #{functionId}
+            </if>
+            <if test="dataValue != null and dataValue != ''">
+                AND data_value = #{dataValue}
+            </if>
+            <if test="startTime != null">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectByTimeRange" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device_data
+        WHERE iot_id = #{iotId,jdbcType=VARCHAR}
+        <if test="startTime != null">
+            AND create_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.zzyl.entity.DeviceData">
+        INSERT INTO device_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deviceName != null">
+                device_name,
+            </if>
+            <if test="iotId != null">
+                iot_id,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="productKey != null">
+                product_key,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="functionId != null">
+                function_id,
+            </if>
+            <if test="accessLocation != null">
+                access_location,
+            </if>
+            <if test="locationType != null">
+                location_type,
+            </if>
+            <if test="physicalLocationType != null">
+                physical_location_type,
+            </if>
+            <if test="deviceDescription != null">
+                device_description,
+            </if>
+            <if test="dataValue != null">
+                data_value,
+            </if>
+            <if test="alarmTime != null">
+                alarm_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deviceName != null">
+                #{deviceName,jdbcType=VARCHAR},
+            </if>
+            <if test="iotId != null">
+                #{iotId,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="productKey != null">
+                #{productKey,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="functionId != null">
+                #{functionId,jdbcType=VARCHAR},
+            </if>
+            <if test="accessLocation != null">
+                #{accessLocation,jdbcType=VARCHAR},
+            </if>
+            <if test="locationType != null">
+                #{locationType,jdbcType=INTEGER},
+            </if>
+            <if test="physicalLocationType != null">
+                #{physicalLocationType,jdbcType=INTEGER},
+            </if>
+            <if test="deviceDescription != null">
+                #{deviceDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="dataValue != null">
+                #{dataValue,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmTime != null">
+                #{alarmTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=BIGINT},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO device_data
+        <trim prefix="(" suffix=")">
+            id, device_name, iot_id, nickname, product_key, product_name, function_id,
+            access_location, location_type, physical_location_type, device_description,
+            data_value, alarm_time, create_time, update_time, create_by, update_by, remark
+        </trim>
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id,jdbcType=BIGINT},
+            #{item.deviceName,jdbcType=VARCHAR},
+            #{item.iotId,jdbcType=VARCHAR},
+            #{item.nickname,jdbcType=VARCHAR},
+            #{item.productKey,jdbcType=VARCHAR},
+            #{item.productName,jdbcType=VARCHAR},
+            #{item.functionId,jdbcType=VARCHAR},
+            #{item.accessLocation,jdbcType=VARCHAR},
+            #{item.locationType,jdbcType=INTEGER},
+            #{item.physicalLocationType,jdbcType=INTEGER},
+            #{item.deviceDescription,jdbcType=VARCHAR},
+            #{item.dataValue,jdbcType=VARCHAR},
+            #{item.alarmTime,jdbcType=TIMESTAMP},
+            #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.createBy,jdbcType=BIGINT},
+            #{item.updateBy,jdbcType=BIGINT},
+            #{item.remark,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.zzyl.entity.DeviceData">
+        UPDATE device_data
+        <set>
+            <if test="deviceName != null">
+                device_name = #{deviceName,jdbcType=VARCHAR},
+            </if>
+            <if test="iotId != null">
+                iot_id = #{iotId,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="productKey != null">
+                product_key = #{productKey,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="functionId != null">
+                function_id = #{functionId,jdbcType=VARCHAR},
+            </if>
+            <if test="accessLocation != null">
+                access_location = #{accessLocation,jdbcType=VARCHAR},
+            </if>
+            <if test="locationType != null">
+                location_type = #{locationType,jdbcType=INTEGER},
+            </if>
+            <if test="physicalLocationType != null">
+                physical_location_type = #{physicalLocationType,jdbcType=INTEGER},
+            </if>
+            <if test="deviceDescription != null">
+                device_description = #{deviceDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="dataValue != null">
+                data_value = #{dataValue,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmTime != null">
+                alarm_time = #{alarmTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=BIGINT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM device_data
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="java.util.List">
+        DELETE FROM device_data
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

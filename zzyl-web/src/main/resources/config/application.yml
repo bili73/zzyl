@@ -125,6 +125,8 @@ zzyl:
         - GET/floor/getAllFloorsWithDevice
         - PUT/nursing_project/**
         - GET/nursing_project/all
+        - GET/nursing_project/page
+        - GET/nursing-project/public/all
         - POST/nursingLevel/insertBatch
         - PUT/alert-rule/**
         - GET/iot/pageQueryDeviceServiceData
@@ -145,7 +147,6 @@ zzyl:
         - PUT/visit/**
         - POST/bill/prepaidRechargeRecord
         - GET/nursingLevel/**
-        - POST/nursingLevel/insert
         - POST/user/page/**
         - GET/endpoints
         - GET/c-user/page

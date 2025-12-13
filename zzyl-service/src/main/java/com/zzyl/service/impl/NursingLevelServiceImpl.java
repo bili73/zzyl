@@ -8,6 +8,7 @@ import com.zzyl.dto.NursingLevelDto;
 import com.zzyl.entity.NursingLevel;
 import com.zzyl.mapper.NursingLevelMapper;
 import com.zzyl.service.NursingLevelService;
+import com.zzyl.utils.UserThreadLocal;
 import com.zzyl.vo.NursingLevelVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class NursingLevelServiceImpl implements NursingLevelService {
         NursingLevel nursingLevel = new NursingLevel();
         BeanUtils.copyProperties(nursingLevelDto, nursingLevel);
         // 设置公共字段
-        nursingLevel.setCreateBy(1L);
+        nursingLevel.setCreateBy(UserThreadLocal.getMgtUserId());
         nursingLevel.setCreateTime(LocalDateTime.now());
         nursingLevel.setUpdateTime(LocalDateTime.now());
         nursingLevelMapper.insert(nursingLevel);
@@ -57,7 +58,7 @@ public class NursingLevelServiceImpl implements NursingLevelService {
         NursingLevel nursingLevel = new NursingLevel();
         BeanUtils.copyProperties(nursingLevelDto, nursingLevel);
         // 设置公共字段
-        nursingLevel.setUpdateBy(1L);
+        nursingLevel.setUpdateBy(UserThreadLocal.getMgtUserId());
         nursingLevel.setUpdateTime(LocalDateTime.now());
         nursingLevelMapper.update(nursingLevel);
     }
@@ -72,7 +73,7 @@ public class NursingLevelServiceImpl implements NursingLevelService {
         NursingLevel nursingLevel = new NursingLevel();
         nursingLevel.setId(id);
         nursingLevel.setStatus(status);
-        nursingLevel.setUpdateBy(1L);
+        nursingLevel.setUpdateBy(UserThreadLocal.getMgtUserId());
         nursingLevel.setUpdateTime(LocalDateTime.now());
         nursingLevelMapper.update(nursingLevel);
     }

@@ -57,4 +57,12 @@ public interface ResourceMapper {
      * @return 菜单列表
      */
     List<MenuVo> findListByUserId(Long userId);
+
+    /**
+     * 根据用户ID查询URL权限列表
+     * @param userId 用户ID
+     * @return URL列表
+     */
+    @Select("select sr.request_path from sys_user_role sur, sys_role_resource srr, sys_resource sr where sur.role_id = srr.role_id and srr.resource_no = sr.resource_no and sr.data_state = '0' and sr.resource_type = 'r' and sur.user_id = #{userId}")
+    List<String> selectUrlListByUserId(Long userId);
 }

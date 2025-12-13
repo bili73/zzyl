@@ -110,6 +110,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         allExcludeUrls.add("/v2/api-docs");
         allExcludeUrls.add("/customer/user/login");
 
+        // 添加登录和安全相关路径
+        allExcludeUrls.add("/login/**");
+        allExcludeUrls.add("/security/login");
+        allExcludeUrls.add("/security/logout");
+        allExcludeUrls.add("/getInfo");
+
         String[] array = allExcludeUrls.toArray(new String[0]);
         registry.addInterceptor(userTokenInterceptor).excludePathPatterns(array).addPathPatterns("/**");
     }

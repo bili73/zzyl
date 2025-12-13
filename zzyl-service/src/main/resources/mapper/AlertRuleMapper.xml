@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzyl.mapper.AlertRuleMapper">
+
+    <resultMap id="BaseResultMap" type="com.zzyl.entity.AlertRule">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="product_key" property="productKey" jdbcType="VARCHAR"/>
+        <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+        <result column="module_id" property="moduleId" jdbcType="VARCHAR"/>
+        <result column="module_name" property="moduleName" jdbcType="VARCHAR"/>
+        <result column="function_name" property="functionName" jdbcType="VARCHAR"/>
+        <result column="function_id" property="functionId" jdbcType="VARCHAR"/>
+        <result column="iot_id" property="iotId" jdbcType="VARCHAR"/>
+        <result column="device_name" property="deviceName" jdbcType="VARCHAR"/>
+        <result column="alert_data_type" property="alertDataType" jdbcType="INTEGER"/>
+        <result column="alert_rule_name" property="alertRuleName" jdbcType="VARCHAR"/>
+        <result column="operator" property="operator" jdbcType="VARCHAR"/>
+        <result column="value" property="value" jdbcType="REAL"/>
+        <result column="duration" property="duration" jdbcType="INTEGER"/>
+        <result column="alert_effective_period" property="alertEffectivePeriod" jdbcType="VARCHAR"/>
+        <result column="alert_silent_period" property="alertSilentPeriod" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, product_key, product_name, module_id, module_name, function_name,
+        function_id, iot_id, device_name, alert_data_type, alert_rule_name,
+        operator, value, duration, alert_effective_period, alert_silent_period,
+        status, create_time, update_time, create_by, update_by, remark
+    </sql>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM alert_rule
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByIotId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM alert_rule
+        WHERE iot_id = #{iotId,jdbcType=VARCHAR}
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectByProductKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM alert_rule
+        WHERE product_key = #{productKey,jdbcType=VARCHAR}
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM alert_rule
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectByCondition" parameterType="com.zzyl.entity.AlertRule" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM alert_rule
+        <where>
+            <if test="iotId != null and iotId != ''">
+                AND iot_id = #{iotId}
+            </if>
+            <if test="productKey != null and productKey != ''">
+                AND product_key = #{productKey}
+            </if>
+            <if test="alertRuleName != null and alertRuleName != ''">
+                AND alert_rule_name LIKE CONCAT('%', #{alertRuleName}, '%')
+            </if>
+            <if test="functionName != null and functionName != ''">
+                AND function_name LIKE CONCAT('%', #{functionName}, '%')
+            </if>
+            <if test="alertDataType != null">
+                AND alert_data_type = #{alertDataType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <insert id="insert" parameterType="com.zzyl.entity.AlertRule">
+        INSERT INTO alert_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="productKey != null">
+                product_key,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="moduleId != null">
+                module_id,
+            </if>
+            <if test="moduleName != null">
+                module_name,
+            </if>
+            <if test="functionName != null">
+                function_name,
+            </if>
+            <if test="functionId != null">
+                function_id,
+            </if>
+            <if test="iotId != null">
+                iot_id,
+            </if>
+            <if test="deviceName != null">
+                device_name,
+            </if>
+            <if test="alertDataType != null">
+                alert_data_type,
+            </if>
+            <if test="alertRuleName != null">
+                alert_rule_name,
+            </if>
+            <if test="operator != null">
+                operator,
+            </if>
+            <if test="value != null">
+                value,
+            </if>
+            <if test="duration != null">
+                duration,
+            </if>
+            <if test="alertEffectivePeriod != null">
+                alert_effective_period,
+            </if>
+            <if test="alertSilentPeriod != null">
+                alert_silent_period,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="productKey != null">
+                #{productKey,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="moduleId != null">
+                #{moduleId,jdbcType=VARCHAR},
+            </if>
+            <if test="moduleName != null">
+                #{moduleName,jdbcType=VARCHAR},
+            </if>
+            <if test="functionName != null">
+                #{functionName,jdbcType=VARCHAR},
+            </if>
+            <if test="functionId != null">
+                #{functionId,jdbcType=VARCHAR},
+            </if>
+            <if test="iotId != null">
+                #{iotId,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceName != null">
+                #{deviceName,jdbcType=VARCHAR},
+            </if>
+            <if test="alertDataType != null">
+                #{alertDataType,jdbcType=INTEGER},
+            </if>
+            <if test="alertRuleName != null">
+                #{alertRuleName,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                #{value,jdbcType=REAL},
+            </if>
+            <if test="duration != null">
+                #{duration,jdbcType=INTEGER},
+            </if>
+            <if test="alertEffectivePeriod != null">
+                #{alertEffectivePeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="alertSilentPeriod != null">
+                #{alertSilentPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=BIGINT},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.zzyl.entity.AlertRule">
+        UPDATE alert_rule
+        <set>
+            <if test="productKey != null">
+                product_key = #{productKey,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="moduleId != null">
+                module_id = #{moduleId,jdbcType=VARCHAR},
+            </if>
+            <if test="moduleName != null">
+                module_name = #{moduleName,jdbcType=VARCHAR},
+            </if>
+            <if test="functionName != null">
+                function_name = #{functionName,jdbcType=VARCHAR},
+            </if>
+            <if test="functionId != null">
+                function_id = #{functionId,jdbcType=VARCHAR},
+            </if>
+            <if test="iotId != null">
+                iot_id = #{iotId,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceName != null">
+                device_name = #{deviceName,jdbcType=VARCHAR},
+            </if>
+            <if test="alertDataType != null">
+                alert_data_type = #{alertDataType,jdbcType=INTEGER},
+            </if>
+            <if test="alertRuleName != null">
+                alert_rule_name = #{alertRuleName,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                operator = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                value = #{value,jdbcType=REAL},
+            </if>
+            <if test="duration != null">
+                duration = #{duration,jdbcType=INTEGER},
+            </if>
+            <if test="alertEffectivePeriod != null">
+                alert_effective_period = #{alertEffectivePeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="alertSilentPeriod != null">
+                alert_silent_period = #{alertSilentPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=BIGINT},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=BIGINT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM alert_rule
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="java.util.List">
+        DELETE FROM alert_rule
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

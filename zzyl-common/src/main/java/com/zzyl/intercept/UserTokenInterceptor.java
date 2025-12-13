@@ -13,6 +13,7 @@ import com.zzyl.utils.StringUtils;
 import com.zzyl.utils.UserThreadLocal;
 import com.zzyl.vo.UserVo;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Component
+@Slf4j
 public class UserTokenInterceptor implements HandlerInterceptor {
 
     @Autowired
@@ -94,15 +96,18 @@ public class UserTokenInterceptor implements HandlerInterceptor {
 
         //匹配当前路径是否在urllist集合中
         if (!CollectionUtils.isEmpty(urlList)) {
+            log.debug("权限匹配: targetUrl={}, urlList={}", targetUrl, urlList);
             for (String url : urlList) {
                 if(antPathMatcher.match(url,targetUrl)){
                     // 有权限的路径，直接放行
+                    log.debug("权限匹配成功: targetUrl={}, matchedUrl={}", targetUrl, url);
                     return true;
                 }
             }
         }
 
         // 如果路径不在权限列表中，抛出权限异常
+        log.warn("权限匹配失败: targetUrl={}, urlList={}", targetUrl, urlList);
         throw new BaseException(BasicEnum.SECURITY_ACCESSDENIED_FAIL);
 
     }

@@ -19,6 +19,11 @@ import java.time.LocalDateTime;
 public class NursingPlan extends BaseEntity {
 
     /**
+     * 排序号
+     */
+    private Integer sortNo;
+
+    /**
      * 计划名称
      */
     private String name;
@@ -52,5 +57,10 @@ public class NursingPlan extends BaseEntity {
      * 备注
      */
     private String remark;
+
+    /**
+     * 创建人姓名（关联查询字段）
+     */
+    private String creator;
 
 }

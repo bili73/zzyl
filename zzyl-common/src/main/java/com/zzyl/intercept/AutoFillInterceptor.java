@@ -47,14 +47,19 @@ public class AutoFillInterceptor implements Interceptor {
                 if (parameter instanceof MapperMethod.ParamMap) {
                     // 批量插入的情况
                     MapperMethod.ParamMap paramMap = (MapperMethod.ParamMap) parameter;
-                    ArrayList list = (ArrayList) paramMap.get("list");
-                    list.forEach(v -> {
-                        // 设置创建人和创建时间字段值
-                        setFieldValByName(CREATE_BY, userId, v);
-                        setFieldValByName(CREATE_TIME, LocalDateTime.now(), v);
-                        setFieldValByName(UPDATE_TIME, LocalDateTime.now(), v);
-                    });
-                    paramMap.put("list", list);
+                    if (paramMap.containsKey("list")) {
+                        ArrayList list = (ArrayList) paramMap.get("list");
+                        if (list != null) {
+                            list.forEach(v -> {
+                                // 设置创建人和创建时间字段值
+                                setFieldValByName(CREATE_BY, userId, v);
+                                setFieldValByName(CREATE_TIME, LocalDateTime.now(), v);
+                                setFieldValByName(UPDATE_TIME, LocalDateTime.now(), v);
+                            });
+                            paramMap.put("list", list);
+                        }
+                    }
+                    // 如果没有list参数，说明是普通的参数插入，不需要自动填充
                 } else {
                     // 单条插入的情况
                     // 设置创建人和创建时间字段值

@@ -27,11 +27,11 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://localhost:3306/zzyl?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
       username: root
-      password: ${DB_PASSWORD:123456}
+      password: 123456
   redis:
     host: localhost
     port: 6379
-    password: ${REDIS_PASSWORD:}
+    password:
     database: 1
     timeout: 2000ms
     jedis:
@@ -69,13 +69,22 @@ zzyl:
       contact-url: www.itheima.com
       contact-email: itheima@itcast.cn
     jwt:
-      base64-encoded-secret-key: ${JWT_SECRET_KEY:your-secret-key-here}
+      base64-encoded-secret-key: $2a$10$PVtHnkj86mJgf6li/yron.LRx/cQAlaiZkBJ9BeogCNTryXJRT1YC
       ttl: 3600000
+    security:
+      publicAccessUrls:
+        - "GET /nursing-project/all"
+        - "GET /nursing-project/page"
+        - "GET /nursing/plan"
+        - "GET /nursing/plan/search"
+      ignoreUrl:
+        - "GET /nursing-project/all"
+        - "GET /nursing-project/page"
     oss:
-      endpoint: ${OSS_ENDPOINT:oss-cn-beijing.aliyuncs.com}
-      accessKeyId: ${OSS_ACCESS_KEY_ID:your-access-key-id}
-      accessKeySecret: ${OSS_ACCESS_KEY_SECRET:your-access-key-secret}
-      bucketName: ${OSS_BUCKET_NAME:your-bucket-name}
+      endpoint: oss-cn-beijing.aliyuncs.com
+      accessKeyId: LTAI5tS3PVWkF5mz89YNeEu7
+      accessKeySecret: fVDUmhEAzEMC1zJhgbcQ5xGdlQiUbY
+      bucketName: java-zzyl-20251103
   wechat:
-    appId: ${WECHAT_APP_ID:your-app-id}
-    appSecret: ${WECHAT_APP_SECRET:your-app-secret}
+    appId: wx3eebdbe27d92431a
+    appSecret: 37e034ed66077fc069b0e26142998b28

@@ -71,10 +71,8 @@ public class LoginServiceImpl implements LoginService {
         //过滤敏感数据
         userVo.setPassword("");
 
-        //获取当前用户对应的资源列表
-        List<Resource> resourceList = resourceMapper.selectListByUserId(userVo.getId());
-        //取出request_path
-        List<String> urlList = resourceList.stream().map(Resource::getRequestPath).collect(Collectors.toList());
+        //获取当前用户对应的资源URL列表
+        List<String> urlList = resourceMapper.selectUrlListByUserId(userVo.getId());
 
         //获取白名单url列表
         List<String> publicAccessUrls = securityConfigProperties.getPublicAccessUrls();

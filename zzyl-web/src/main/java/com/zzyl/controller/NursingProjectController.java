@@ -29,6 +29,16 @@ public class NursingProjectController extends BaseController {
         return success(allData.getRecords());
     }
 
+    /**
+     * 临时公开接口，用于前端下拉框数据加载
+     */
+    @GetMapping("/public/all")
+    @ApiOperation(value = "公开接口-获取所有护理项目", notes = "公开接口，获取所有护理项目信息")
+    public ResponseResult<List<NursingProjectVo>> getAllPublic() {
+        PageResponse<NursingProjectVo> allData = nursingProjectService.getByPage(null, null, 1, 1000);
+        return success(allData.getRecords());
+    }
+
     @GetMapping("/page")
     @ApiOperation(value = "分页查询护理项目", notes = "根据名称和状态分页查询护理项目")
     public ResponseResult<PageResponse<NursingProjectVo>> getByPage(

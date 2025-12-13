@@ -8,6 +8,7 @@ import com.zzyl.dto.NursingProjectDto;
 import com.zzyl.entity.NursingProject;
 import com.zzyl.mapper.NursingProjectMapper;
 import com.zzyl.service.NursingProjectService;
+import com.zzyl.utils.UserThreadLocal;
 import com.zzyl.vo.NursingProjectVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class NursingProjectServiceImpl implements NursingProjectService {
         NursingProject nursingProject = new NursingProject();
         BeanUtils.copyProperties(nursingProjectDTO, nursingProject);
         // 设置公共字段
-        nursingProject.setCreateBy(1L);
+        nursingProject.setCreateBy(UserThreadLocal.getMgtUserId());
         nursingProject.setCreateTime(LocalDateTime.now());
         nursingProject.setUpdateTime(LocalDateTime.now());
         nursingProjectMapper.insert(nursingProject);
@@ -59,7 +60,7 @@ public class NursingProjectServiceImpl implements NursingProjectService {
         NursingProject nursingProject = new NursingProject();
         BeanUtils.copyProperties(nursingProjectDTO, nursingProject);
         // 设置公共字段
-        nursingProject.setUpdateBy(1L);
+        nursingProject.setUpdateBy(UserThreadLocal.getMgtUserId());
         nursingProject.setUpdateTime(LocalDateTime.now());
         nursingProjectMapper.update(nursingProject);
     }
@@ -94,7 +95,7 @@ public class NursingProjectServiceImpl implements NursingProjectService {
         NursingProject nursingProject = new NursingProject();
         nursingProject.setId(id);
         nursingProject.setStatus(status);
-        nursingProject.setUpdateBy(1L);
+        nursingProject.setUpdateBy(UserThreadLocal.getMgtUserId());
         nursingProject.setUpdateTime(LocalDateTime.now());
         nursingProjectMapper.update(nursingProject);
     }
