@@ -1,5 +1,6 @@
 package com.zzyl.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zzyl.base.BaseDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class NursingPlanDto extends BaseDto {
      * 计划名称
      */
     @ApiModelProperty(value = "计划名称")
+    @JsonProperty("planName")
     private String name;
 
     /**
@@ -60,4 +62,10 @@ public class NursingPlanDto extends BaseDto {
      */
     @ApiModelProperty(value = "护理项目ID列表")
     private List<Long> nursingProjectIds;
+
+    /**
+     * 护理项目计划列表（前端传递）
+     */
+    @ApiModelProperty(value = "护理项目计划列表")
+    private List<NursingProjectPlanDto> projectPlans;
 }

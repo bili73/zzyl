@@ -56,12 +56,14 @@
 
     <update id="update">
         update nursing_plan
-        set plan_name         = #{name},
-            sort_no           = #{sortNo},
-            status            = #{status},
-            remark            = #{remark},
-            update_by         = #{updateBy},
-            update_time       = #{updateTime}
+        <set>
+            <if test="name != null">plan_name = #{name},</if>
+            <if test="sortNo != null">sort_no = #{sortNo},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
         where id = #{id}
     </update>
 
@@ -74,10 +76,23 @@
         select project_id from nursing_project_plan where plan_id = #{planId}
     </select>
 
+    <!-- 查询护理计划项目详细信息（包含执行参数和项目名称） -->
+    <select id="selectProjectPlanDetailsByPlanId" resultType="com.zzyl.dto.NursingProjectPlanDto">
+        select
+            npp.project_id as projectId,
+            np.name as projectName,
+            npp.execute_time as executeTime,
+            npp.execute_cycle as executeCycle,
+            npp.execute_frequency as executeFrequency
+        from nursing_project_plan npp
+        left join nursing_project np on npp.project_id = np.id
+        where npp.plan_id = #{planId}
+    </select>
+
     <!-- 插入护理计划项目关联关系 -->
     <insert id="insertPlanProject">
-        insert into nursing_project_plan (plan_id, project_id, create_by, create_time)
-        values (#{planId}, #{projectId}, #{planId}, NOW())
+        insert into nursing_project_plan (plan_id, project_id, create_by, update_by, create_time, update_time, execute_time, execute_cycle, execute_frequency)
+        values (#{planId}, #{projectId}, #{createBy}, #{createBy}, NOW(), NOW(), #{executeTime}, #{executeCycle}, #{executeFrequency})
     </insert>
 
     <!-- 删除护理计划项目关联关系 -->

@@ -30,4 +30,11 @@ public interface NursingLevelMapper {
     void update(NursingLevel nursingLevel);
 
     void deleteById(Long id);
+
+    /**
+     * 根据护理计划ID查询护理等级
+     * @param planId 护理计划ID
+     * @return 护理等级列表
+     */
+    java.util.List<NursingLevel> selectByPlanId(Long planId);
 }
